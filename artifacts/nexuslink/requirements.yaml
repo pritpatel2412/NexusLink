@@ -1,0 +1,24 @@
+packages:
+  "framer-motion": "For page transitions, staggered list reveals, and micro-interactions"
+  "recharts": "For the dashboard analytics charts (interactions and tag distribution)"
+  "date-fns": "For human-readable relative timestamps and date formatting"
+  "react-hook-form": "For complex forms (contacts, tasks) with validation"
+  "@hookform/resolvers": "Zod resolver for react-hook-form validation"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to merge tailwind classes safely"
+
+images:
+  - path: "artifacts/nexuslink/public/images/hero-bg.png"
+    description: "Abstract premium dark theme background, deep charcoal and black mesh gradient with subtle glowing electric indigo and violet light leaks. Sophisticated SaaS aesthetic."
+    aspect_ratio: "16:9"
+  - path: "artifacts/nexuslink/public/images/empty-contacts.png"
+    description: "Minimalist 3D abstract illustration for an empty state. Dark luxury theme. Floating glowing geometric shapes, subtle indigo lighting on deep charcoal."
+    aspect_ratio: "1:1"
+  - path: "artifacts/nexuslink/public/images/not-found.png"
+    description: "Dark premium 404 error illustration. A subtle glowing portal or lost connection concept on a deep black background with violet accents."
+    aspect_ratio: "16:9"
+
+notes:
+  - "The API endpoints are defined in @workspace/api-client-react. All generated react-query hooks import from there."
+  - "Since authentication is session-based via httpOnly cookies, we handle global user state by wrapping the useGetMe hook."
+  - "Using Lucide React for all standard icons."

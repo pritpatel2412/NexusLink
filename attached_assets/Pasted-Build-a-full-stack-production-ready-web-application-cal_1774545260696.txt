@@ -1,0 +1,840 @@
+Build a full-stack, production-ready web application called "NexusLink" — a Personal CRM & AI Memory Assistant for founders, freelancers, and creators. This is a premium SaaS product with world-class design and complete end-to-end functionality.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 DESIGN SYSTEM & VISUAL IDENTITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Theme: Dark luxury — deep charcoal backgrounds with electric indigo/violet accents. Think Notion meets Linear meets a high-end fintech product.
+
+Color Palette (use CSS variables throughout):
+  --bg-primary: #0A0A0F
+  --bg-secondary: #111118
+  --bg-card: #16161F
+  --bg-elevated: #1C1C28
+  --accent-primary: #6C63FF (electric indigo)
+  --accent-secondary: #A78BFA (soft violet)
+  --accent-glow: rgba(108, 99, 255, 0.15)
+  --text-primary: #F0F0FF
+  --text-secondary: #9898B8
+  --text-muted: #5A5A7A
+  --border-subtle: rgba(108, 99, 255, 0.12)
+  --border-active: rgba(108, 99, 255, 0.4)
+  --success: #34D399
+  --warning: #FBBF24
+  --danger: #F87171
+  --gradient-hero: linear-gradient(135deg, #6C63FF 0%, #A78BFA 50%, #C084FC 100%)
+
+Typography:
+  - Display/Headings: "Syne" (Google Fonts) — geometric, distinctive
+  - Body: "DM Sans" (Google Fonts) — clean, readable
+  - Mono/Code/Dates: "JetBrains Mono" (Google Fonts)
+
+Animations & Motion (use Framer Motion):
+  - Page transitions: fade + slide up (0.3s ease-out)
+  - Cards: staggered entrance with 0.05s delay per item
+  - Hover on cards: translateY(-2px) + subtle box-shadow glow
+  - Buttons: scale(0.97) on press + ripple effect
+  - Sidebar: smooth collapse/expand with width transition
+  - Loading states: skeleton shimmer with gradient sweep
+  - Modal open: scale from 0.95 to 1 + fade
+  - Number counters: animate count-up on dashboard load
+  - Background: very subtle animated gradient mesh on auth pages
+  - Toast notifications: slide in from top-right
+
+Global UI Components:
+  - Cards with border: 1px solid var(--border-subtle), background var(--bg-card), border-radius 12px
+  - On hover: border color changes to var(--border-active), subtle indigo glow box-shadow
+  - Buttons: primary (gradient bg), ghost (transparent + border), danger (red tint)
+  - Inputs: dark bg, subtle border, glowing focus ring in accent color
+  - Badges/Tags: pill shape, colored backgrounds with matching text
+  - Avatars: gradient fallback with initials when no photo
+  - Empty states: illustrated SVG placeholders with helpful copy
+  - Scrollbars: custom styled, thin, accent-colored
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧱 TECH STACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frontend:
+  - Next.js 14 (App Router, TypeScript)
+  - Tailwind CSS (with custom config for design tokens)
+  - Framer Motion (all animations)
+  - shadcn/ui (base components, heavily customized)
+  - React Hook Form + Zod (form validation)
+  - TanStack Query (data fetching/caching)
+  - Zustand (global state)
+  - Recharts (dashboard charts)
+  - date-fns (date formatting)
+  - Lucide React (icons)
+
+Backend:
+  - Next.js API Routes (serverless)
+  - Prisma ORM
+  - PostgreSQL (use Replit's built-in PostgreSQL or SQLite for dev)
+  - NextAuth.js (Google OAuth + email/password)
+  - bcryptjs (password hashing)
+  - Resend or Nodemailer (email sending)
+  - OpenAI API (GPT-4o-mini for AI features)
+  - node-cron (background reminder jobs)
+  - Uploadthing or local file storage (file uploads)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🗂️ COMPLETE PAGE & ROUTE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Public Routes (unauthenticated):
+  /                    → Landing page
+  /login               → Login page
+  /signup              → Signup page
+  /forgot-password     → Password reset request
+  /reset-password      → Password reset form
+
+Protected Routes (authenticated, inside dashboard layout):
+  /dashboard           → Home dashboard
+  /contacts            → Contacts list/grid
+  /contacts/new        → Add new contact form
+  /contacts/[id]       → Contact detail page
+  /contacts/[id]/edit  → Edit contact
+  /timeline            → Global activity timeline
+  /tasks               → All tasks and follow-ups
+  /reminders           → Reminders management
+  /ai-assistant        → AI chat/assistant page
+  /import-export       → CSV import/export
+  /settings            → User settings
+  /settings/profile    → Profile settings
+  /settings/integrations → Integration settings
+  /settings/billing    → Billing & plan page
+  /settings/notifications → Notification preferences
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 PAGE-BY-PAGE DETAILED SPECIFICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━ PAGE 1: LANDING PAGE ( / ) ━━
+
+Full-screen hero section:
+  - Animated gradient mesh background (slow-moving blobs in indigo/violet)
+  - Large headline: "Your Second Brain for Every Relationship" (Syne font, 72px)
+  - Subheadline: "Stop forgetting people. NexusLink remembers every conversation, follow-up, and promise — so you can focus on what matters."
+  - Two CTA buttons: "Start for Free" (primary gradient) + "See How It Works" (ghost)
+  - Floating mockup of the dashboard UI (subtle rotation animation, drop shadow glow)
+  - Particle/dot grid background layer (subtle, animated)
+
+Features section (3 columns with icon cards):
+  - "Capture in Seconds" — Quick add contacts with context
+  - "AI-Powered Memory" — Get briefed before every meeting
+  - "Never Miss a Follow-Up" — Smart reminders and tasks
+
+How it works section (numbered steps, horizontal timeline):
+  Step 1: Add a contact — name, role, where you met
+  Step 2: Log every interaction — calls, notes, emails
+  Step 3: Get AI briefings — before every call or meeting
+  Step 4: Follow up on time — automated smart reminders
+
+Social proof section:
+  - 3 testimonial cards with avatar, name, role, and quote
+  - Subtle staggered animation on scroll-into-view
+
+Pricing section (3 tiers):
+  - Free: 100 contacts, basic notes, 5 reminders/month
+  - Pro ($14/mo): Unlimited contacts, AI features, integrations — highlighted with "Most Popular" badge
+  - Team ($39/mo): Shared CRM for small teams, role permissions
+
+Footer:
+  - Logo + tagline
+  - Links: Features, Pricing, Blog, Privacy, Terms
+  - Social icons
+
+━━ PAGE 2: AUTH PAGES (Login / Signup / Forgot Password) ━━
+
+Split layout:
+  - Left half: Animated gradient background with floating testimonial quote cards, app name, and tagline
+  - Right half: Clean white/dark card with the form
+
+Login form fields:
+  - Email input
+  - Password input (with show/hide toggle)
+  - "Remember me" checkbox
+  - "Forgot password?" link
+  - Primary "Sign In" button (full width)
+  - Divider "or continue with"
+  - Google OAuth button (with Google icon)
+  - Link to signup
+
+Signup form fields:
+  - Full name
+  - Email
+  - Password (strength indicator bar below)
+  - Confirm password
+  - Agree to terms checkbox
+  - "Create Account" button
+  - Google OAuth button
+  - Link to login
+
+Forgot password:
+  - Email input
+  - "Send Reset Link" button
+  - Success state: animated checkmark + "Check your email" message
+
+All forms: real-time Zod validation, error messages per field, loading spinner on submit
+
+━━ PAGE 3: DASHBOARD ( /dashboard ) ━━
+
+Top header bar:
+  - "Good morning, [Name] 👋" greeting (dynamic time-based)
+  - Date and day
+  - Search bar (global search, opens command palette on click — Cmd+K)
+  - Notification bell with badge count
+  - User avatar with dropdown (Profile, Settings, Logout)
+
+Left sidebar (collapsible):
+  - App logo/name at top
+  - Navigation items with icons:
+    Dashboard, Contacts, Timeline, Tasks, Reminders, AI Assistant
+  - Bottom section: Import/Export, Settings, Upgrade to Pro (if free)
+  - Active item: highlighted with accent color + left border indicator
+  - Collapse to icon-only mode on small screens
+
+Metric cards row (4 cards, animated count-up on load):
+  - Total Contacts (with trend arrow vs last month)
+  - Interactions This Week
+  - Tasks Due Today
+  - Upcoming Meetings
+
+"Today's Focus" section:
+  - List of contacts that have tasks/follow-ups due today
+  - Each item: avatar, name, task description, "Mark Done" button
+  - If empty: illustrated empty state "You're all caught up!"
+
+Recent Activity feed:
+  - Chronological list of recent interactions across all contacts
+  - Each item: avatar, contact name, interaction type icon, summary, time ago
+  - Paginated or "Load more" button
+
+Upcoming Reminders widget:
+  - Next 5 reminders listed with contact name, task, and due time
+  - Click to go to that contact
+
+Quick Add Contact button:
+  - Floating action button (FAB) in bottom right corner
+  - Opens a slide-in drawer/modal for quick contact creation
+
+Charts section (2 charts side by side):
+  - Bar chart: Interactions per day (last 14 days) using Recharts
+  - Donut chart: Contact tag distribution (investor, client, creator, etc.)
+
+━━ PAGE 4: CONTACTS LIST ( /contacts ) ━━
+
+Top bar:
+  - Page title "Contacts" with total count badge
+  - Search input (filter contacts live)
+  - Filter dropdown: by tag, by last interaction date, by status
+  - Sort dropdown: by name, by last added, by last interaction
+  - View toggle: Grid view / List view (animated transition between views)
+  - "New Contact" button (opens /contacts/new)
+
+Grid view:
+  - Cards in 3-column responsive grid
+  - Each card:
+    - Gradient avatar (initials or uploaded photo)
+    - Name (bold), Role, Company
+    - Tags (pill badges, color-coded by type)
+    - Last interaction date ("Last spoke 3 days ago")
+    - Quick action icons on hover: Edit, Add Note, Set Reminder
+    - Hover: card lifts with glow effect
+
+List view:
+  - Table with columns: Avatar+Name, Role, Company, Tags, Last Interaction, Tasks Due, Actions
+  - Row hover highlight
+  - Checkbox for bulk select
+
+Bulk actions bar (appears when items selected):
+  - Export selected, Delete selected, Add tag to selected
+
+Pagination or infinite scroll at bottom
+
+Empty state (no contacts yet):
+  - Large illustration, headline "Add your first contact", CTA button
+
+━━ PAGE 5: ADD / EDIT CONTACT ( /contacts/new and /contacts/[id]/edit ) ━━
+
+Multi-section form (single page, not wizard):
+
+Section 1 — Basic Info:
+  - Avatar upload area (drag & drop or click, circular preview)
+  - Full name (required)
+  - Email address
+  - Phone number
+  - Location (city/country)
+
+Section 2 — Professional Info:
+  - Company name
+  - Role/Title
+  - LinkedIn URL
+  - Twitter/X URL
+  - Personal website URL
+
+Section 3 — Context (How You Know Them):
+  - "Where we met" (e.g., "Web Summit 2024", "Twitter DM", "Friend referral")
+  - "Introduced by" (name of mutual connection)
+  - "Topics discussed" (multi-line textarea)
+  - Tags (multi-select with ability to create new tags inline)
+    - Pre-defined: investor, client, collaborator, creator, mentor, vendor, friend, warm-lead
+    - Each tag gets a color automatically
+
+Section 4 — Business Card / Screenshot Upload:
+  - Dropzone with camera icon
+  - Upload image to extract info with OCR
+  - "Extract Info" button
+  - Simulated OCR result populates the form fields with animation
+  - User can confirm or edit the extracted fields
+
+Section 5 — First Interaction Note:
+  - Type dropdown: Meeting, Call, DM, Email, Event, Other
+  - Date/time picker
+  - Notes textarea (what was discussed, first impressions)
+
+Section 6 — Initial Follow-Up Task:
+  - Toggle "Set a follow-up?" 
+  - Task title input
+  - Due date picker
+  - Priority: Low, Medium, High
+
+Bottom: "Save Contact" (primary) + "Cancel" (ghost) buttons
+Success: animated checkmark + "Contact saved!" toast + redirect to contact detail page
+
+━━ PAGE 6: CONTACT DETAIL ( /contacts/[id] ) ━━
+
+Hero header:
+  - Large gradient avatar (or uploaded photo)
+  - Name (H1), Role @ Company
+  - Location with map pin icon
+  - Contact links: email icon, phone icon, LinkedIn, Twitter (all clickable)
+  - Tags displayed as colored pills
+  - Action buttons: "Edit", "Add Interaction", "Add Task", "Get AI Brief"
+
+Two-column layout below header:
+
+LEFT COLUMN — Interaction Timeline:
+  - Vertical timeline with icons per type (📞 Call, 📧 Email, 📝 Note, 🤝 Meeting)
+  - Each entry: type icon, date, summary text, source badge (Manual/Calendar/Gmail)
+  - Expand/collapse longer notes
+  - "Add Interaction" button at top of timeline
+  - Interaction types visually distinct with color-coded left borders
+
+  "Add Interaction" modal (slides in from right):
+    - Type selector (icons for each type)
+    - Date + time picker
+    - Notes/summary textarea
+    - File attachment (optional)
+    - "Save Interaction" button
+
+RIGHT COLUMN — Sidebar Panels:
+
+  Panel 1: AI Brief (collapsed by default, expands on click)
+    - "Generate Brief" button
+    - Loading: animated dots with "Analyzing relationship..."
+    - Output: bullet-point AI summary of who this person is, last topics, open items
+    - "Draft Follow-Up Email" button below
+
+  Panel 2: Open Tasks
+    - List of pending tasks with due dates
+    - Checkbox to mark complete (strikethrough animation)
+    - "Add Task" button
+
+  Panel 3: Reminders
+    - Upcoming reminders for this contact
+    - Edit or delete each
+
+  Panel 4: Files & Attachments
+    - Uploaded files/images listed
+    - Upload new file button
+
+  Panel 5: Contact Meta
+    - Added on date
+    - Last updated
+    - Source (manually added, imported, etc.)
+    - "Where we met" field
+    - "Introduced by" field
+
+━━ PAGE 7: GLOBAL TIMELINE ( /timeline ) ━━
+
+Page header: "Activity Timeline" + date range filter + contact filter dropdown
+
+Infinite scrolling feed:
+  - Grouped by date ("Today", "Yesterday", "March 2025", etc.)
+  - Each entry: colored icon by type, contact avatar, contact name (link), interaction summary, timestamp
+  - Filter buttons: All | Calls | Meetings | Emails | Notes
+
+Search bar to filter timeline entries
+
+━━ PAGE 8: TASKS & FOLLOW-UPS ( /tasks ) ━━
+
+Top: Tab bar — "All Tasks" | "Due Today" | "This Week" | "Overdue" | "Completed"
+
+Stats row: 
+  - Overdue count (red), Due today (yellow), This week, Completed this month
+
+Task list grouped by due date:
+  - Each task card:
+    - Checkbox (completes task with animation)
+    - Task title (bold)
+    - Contact name + avatar (linked)
+    - Due date (red if overdue, yellow if today)
+    - Priority badge (High/Medium/Low)
+    - Edit button, Delete button
+  - Completed tasks: strikethrough, muted styling
+
+"Add Task" button opens modal:
+  - Title
+  - Contact search (autocomplete dropdown)
+  - Due date picker
+  - Priority selector
+  - Description (optional)
+
+━━ PAGE 9: REMINDERS ( /reminders ) ━━
+
+Calendar view (monthly grid) showing reminder dots on days
+Switch between Calendar and List views
+
+List view:
+  - Upcoming reminders in chronological order
+  - Each row: reminder message, contact linked, due date/time, "Edit" + "Dismiss" actions
+
+Settings panel:
+  - Default reminder timing (1 day before, 3 days, 1 week)
+  - Notification channels: Email toggle, Browser push toggle
+  - Daily digest toggle with preferred time
+
+━━ PAGE 10: AI ASSISTANT ( /ai-assistant ) ━━
+
+Split layout:
+  LEFT: Chat interface
+    - Chat history (messages alternating user/AI, with timestamps)
+    - Message bubbles: user (right, accent gradient), AI (left, dark card)
+    - Input box at bottom with send button + microphone icon placeholder
+    - Suggested quick prompts above input (clickable chips):
+      "Brief me on [contact] before my call"
+      "Who have I not spoken to in 30 days?"
+      "Draft a follow-up email to [contact]"
+      "Summarize all interactions with [contact]"
+    - Typing animation (three bouncing dots) while AI responds
+    - AI responses support Markdown rendering (bold, bullets, etc.)
+    - Each AI response has: Copy button, Thumbs up/down feedback
+
+  RIGHT: Context panel
+    - "Selected Contact" card (search to select a contact for context)
+    - Shows: contact name, role, last interaction, open tasks
+    - AI uses this context in responses
+    - Recent AI outputs saved as cards below
+
+━━ PAGE 11: IMPORT / EXPORT ( /import-export ) ━━
+
+Two sections:
+
+IMPORT section:
+  - Dropzone for CSV file upload
+  - "Download sample CSV template" link
+  - Field mapping UI: left = CSV columns, right = app fields (drag to map)
+  - Preview table: shows first 5 rows of parsed data
+  - "Import X Contacts" button with progress bar on submit
+  - Success: "Imported 47 contacts" with summary
+
+EXPORT section:
+  - "Export All Contacts" button → downloads CSV
+  - Options: include tags, include interaction history, date range filter
+  - "Export Filtered View" option (exports only what's currently filtered)
+
+━━ PAGE 12: SETTINGS ( /settings/* ) ━━
+
+Settings layout: sidebar navigation on left with sections:
+
+Profile (/settings/profile):
+  - Avatar upload (circular, drag & drop)
+  - Full name
+  - Email (with "Change Email" flow)
+  - Change password section
+  - Timezone selector
+  - "Save Changes" button
+
+Integrations (/settings/integrations):
+  - Google Calendar: Connect/Disconnect button + status badge
+  - Gmail: Connect/Disconnect button + status badge  
+  - Notion: Coming Soon badge
+  - Zapier webhook URL (copy-to-clipboard)
+  Each integration card: logo, name, description, status, connect button
+
+Notifications (/settings/notifications):
+  - Email notifications toggle
+  - Browser push toggle
+  - Daily digest toggle + time picker
+  - Meeting brief timing: 15 min / 30 min / 1 hour before
+  - Overdue task notifications toggle
+
+Billing (/settings/billing):
+  - Current plan card (highlighted with accent color if Pro)
+  - Usage stats: contacts used, AI calls this month
+  - Upgrade/downgrade buttons
+  - Plan comparison table (Free vs Pro vs Team)
+  - Invoice history table (mock data)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🗄️ DATABASE SCHEMA (Prisma)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  plan          String   @default("free") // free, pro, team
+  timezone      String   @default("UTC")
+  createdAt     DateTime @default(now())
+  contacts      Contact[]
+  tasks         Task[]
+  reminders     Reminder[]
+  aiChats       AiChat[]
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  email         String?
+  phone         String?
+  location      String?
+  company       String?
+  role          String?
+  linkedinUrl   String?
+  twitterUrl    String?
+  website       String?
+  avatarUrl     String?
+  whereMet      String?
+  introducedBy  String?
+  topicsDiscussed String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  tags          ContactTag[]
+  interactions  Interaction[]
+  tasks         Task[]
+  reminders     Reminder[]
+  files         File[]
+  aiSummaries   AiSummary[]
+}
+
+model ContactTag {
+  id        String  @id @default(cuid())
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tag       String
+  color     String  @default("#6C63FF")
+}
+
+model Interaction {
+  id          String   @id @default(cuid())
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  userId      String
+  type        String   // call, meeting, email, note, dm, event
+  summary     String
+  source      String   @default("manual") // manual, calendar, gmail
+  occurredAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  files       File[]
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  contactId   String?
+  contact     Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  dueDate     DateTime?
+  priority    String   @default("medium") // low, medium, high
+  status      String   @default("pending") // pending, done
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+  reminder    Reminder?
+}
+
+model Reminder {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactId   String?
+  contact     Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  taskId      String?  @unique
+  task        Task?    @relation(fields: [taskId], references: [id])
+  message     String
+  remindAt    DateTime
+  sent        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model File {
+  id            String       @id @default(cuid())
+  contactId     String?
+  contact       Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  interactionId String?
+  interaction   Interaction? @relation(fields: [interactionId], references: [id])
+  userId        String
+  fileUrl       String
+  fileName      String
+  fileType      String
+  createdAt     DateTime     @default(now())
+}
+
+model AiSummary {
+  id          String   @id @default(cuid())
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  userId      String
+  summaryText String   @db.Text
+  createdAt   DateTime @default(now())
+}
+
+model AiChat {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Json     // array of {role, content, timestamp}
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔌 API ROUTES (Next.js API Routes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Auth:
+  POST /api/auth/signup         → Create user account
+  POST /api/auth/[...nextauth]  → NextAuth handler (Google + credentials)
+
+Contacts:
+  GET    /api/contacts              → List all (with search, filter, sort query params)
+  POST   /api/contacts              → Create new contact
+  GET    /api/contacts/[id]         → Get single contact with all related data
+  PUT    /api/contacts/[id]         → Update contact
+  DELETE /api/contacts/[id]         → Delete contact
+  POST   /api/contacts/[id]/tags    → Add tag
+  DELETE /api/contacts/[id]/tags/[tagId] → Remove tag
+
+Interactions:
+  GET    /api/interactions          → Global timeline (all contacts)
+  POST   /api/interactions          → Add new interaction
+  PUT    /api/interactions/[id]     → Update interaction
+  DELETE /api/interactions/[id]     → Delete interaction
+
+Tasks:
+  GET    /api/tasks                 → List all tasks (filter by status, due date)
+  POST   /api/tasks                 → Create task
+  PUT    /api/tasks/[id]            → Update task (including marking complete)
+  DELETE /api/tasks/[id]            → Delete task
+
+Reminders:
+  GET    /api/reminders             → List upcoming reminders
+  POST   /api/reminders             → Create reminder
+  PUT    /api/reminders/[id]        → Update reminder
+  DELETE /api/reminders/[id]        → Delete reminder
+
+AI:
+  POST   /api/ai/brief              → Generate contact brief (accepts contactId)
+  POST   /api/ai/draft-email        → Draft follow-up email (accepts contactId, context)
+  POST   /api/ai/chat               → General AI assistant chat (accepts messages array + optional contactId)
+  POST   /api/ai/search             → Natural language contact search
+
+Files:
+  POST   /api/files/upload          → Upload file (multipart/form-data)
+  DELETE /api/files/[id]            → Delete file
+
+Import/Export:
+  POST   /api/import/csv            → Parse and import contacts from CSV
+  GET    /api/export/csv            → Export contacts as CSV download
+
+Dashboard:
+  GET    /api/dashboard/stats       → Aggregate stats (contact count, tasks due, interactions this week)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🤖 AI INTEGRATION DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use OpenAI API (model: gpt-4o-mini, temperature: 0.7)
+
+1. Contact Brief (/api/ai/brief):
+   System: "You are a personal CRM assistant. Given information about a contact and their interaction history, generate a concise pre-meeting brief."
+   Input: contact data + last 5 interactions + open tasks
+   Output format:
+     - Who they are (2 sentences)
+     - Last 3 topics discussed (bullet points)
+     - Open action items
+     - Suggested talking points
+
+2. Draft Follow-Up Email (/api/ai/draft-email):
+   System: "You are helping a founder write a professional, warm follow-up email."
+   Input: contact name, role, last interaction summary, open tasks
+   Output: Subject line + email body (ready to copy)
+
+3. Chat Assistant (/api/ai/chat):
+   System: "You are NexusLink, an AI assistant for a personal CRM. You help the user remember people, draft communications, and manage relationships. You have access to their contacts data when provided."
+   Input: messages history + optional contact context JSON
+   Output: conversational response with formatting
+
+4. Natural Language Search (/api/ai/search):
+   System: "Extract search criteria from a natural language query about contacts."
+   Input: user query string
+   Output: JSON with fields to search (name contains, location, tags, role keywords, date range)
+
+For all AI calls:
+  - Stream responses where possible for better UX
+  - Show token usage in dev mode
+  - Graceful error handling: "AI is currently unavailable, please try again"
+  - Rate limit per user (free: 10 AI calls/day, pro: unlimited)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 COMPONENT ARCHITECTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/components
+  /layout
+    DashboardLayout.tsx      → Sidebar + header shell
+    Sidebar.tsx              → Navigation sidebar
+    Header.tsx               → Top bar with search/notifications
+    CommandPalette.tsx       → Cmd+K global search overlay
+  /ui (shadcn base + custom)
+    Button.tsx, Input.tsx, Badge.tsx, Card.tsx
+    Modal.tsx, Drawer.tsx, Dropdown.tsx
+    Avatar.tsx, Skeleton.tsx, Toast.tsx
+    Tabs.tsx, Progress.tsx, Tooltip.tsx
+  /contacts
+    ContactCard.tsx          → Grid view card
+    ContactRow.tsx           → List view row
+    ContactForm.tsx          → Add/edit form
+    ContactTimeline.tsx      → Interaction timeline
+    AiBriefPanel.tsx         → AI brief accordion panel
+    TagInput.tsx             → Tag selector with color picker
+  /tasks
+    TaskCard.tsx             → Individual task item
+    TaskForm.tsx             → Add/edit task modal
+  /interactions
+    InteractionItem.tsx      → Timeline entry
+    AddInteractionModal.tsx  → Modal form
+  /ai
+    ChatMessage.tsx          → Single chat bubble
+    ChatInput.tsx            → Message input with suggestions
+  /dashboard
+    StatCard.tsx             → Animated metric card
+    ActivityFeed.tsx         → Recent activity list
+    ChartBar.tsx             → Recharts bar chart wrapper
+    ChartDonut.tsx           → Recharts donut chart wrapper
+  /common
+    EmptyState.tsx           → Illustrated empty states
+    LoadingSpinner.tsx       → Custom spinner
+    PageHeader.tsx           → Reusable page title + actions bar
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ ENVIRONMENT VARIABLES (.env.local)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DATABASE_URL=                  # PostgreSQL connection string
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=               # Random secret (use openssl rand -base64 32)
+GOOGLE_CLIENT_ID=              # Google OAuth
+GOOGLE_CLIENT_SECRET=          # Google OAuth
+OPENAI_API_KEY=                # OpenAI API key
+UPLOADTHING_SECRET=            # For file uploads (optional)
+UPLOADTHING_APP_ID=            # For file uploads (optional)
+RESEND_API_KEY=                # For email reminders (optional)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔐 AUTH & SECURITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Use NextAuth.js with Prisma adapter
+- Support: Google OAuth + Email/Password (credentials provider)
+- Passwords: bcrypt with 12 salt rounds
+- All API routes protected with getServerSession() check
+- User can only access their own data (always filter by userId)
+- JWT session strategy
+- Middleware.ts: redirect unauthenticated users to /login from all /dashboard/* routes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌀 ANIMATIONS SPECIFICATION (Framer Motion)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Page transitions (wrap in AnimatePresence):
+  initial: { opacity: 0, y: 16 }
+  animate: { opacity: 1, y: 0 }
+  transition: { duration: 0.3, ease: "easeOut" }
+
+Card list stagger:
+  parent: staggerChildren: 0.05
+  child: { opacity: 0, y: 20 } → { opacity: 1, y: 0 }
+
+Modal:
+  initial: { scale: 0.95, opacity: 0 }
+  animate: { scale: 1, opacity: 1 }
+  transition: { duration: 0.2, ease: "easeOut" }
+
+Stat counter (use useMotionValue + useSpring):
+  Animate from 0 to final value over 1.2s on mount
+
+Sidebar collapse:
+  width: animate between 240px and 64px
+  labels: animate opacity 0/1
+
+Notification bell: wobble keyframes on new notification
+Like/complete button: scale 1.3 then 1 with bounce
+Tag creation: slide in from left + fade
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📱 RESPONSIVE DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Mobile-first Tailwind breakpoints
+- Mobile (<768px): Sidebar becomes bottom tab bar (5 main sections), single column layout
+- Tablet (768-1024px): Collapsed icon sidebar, 2-column contact grid
+- Desktop (>1024px): Full sidebar, 3-column grid, dual-panel contact detail
+- All modals/drawers are full-screen on mobile
+- Touch-friendly tap targets (min 44x44px)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧪 SAMPLE / SEED DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create a seed script (prisma/seed.ts) that creates:
+- 1 demo user (email: demo@nexuslink.app, password: demo1234)
+- 12-15 realistic contacts with varied tags (investors, clients, collaborators)
+- 2-3 interactions per contact with varied types and dates
+- 5-8 pending tasks spread across contacts
+- 3-4 upcoming reminders
+This allows anyone to log in and immediately see a fully populated dashboard.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 ADDITIONAL POLISH REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Custom 404 page with illustrated character + "Go back home" button
+2. Loading skeletons on every data-fetching page (never blank screens)
+3. Optimistic UI updates (mark task done instantly, revert on error)
+4. Toast notifications for all user actions (saved, deleted, error)
+5. Keyboard shortcuts: Cmd+K (search), Cmd+N (new contact), Escape (close modal)
+6. Command palette (Cmd+K): search contacts, navigate pages, run quick actions
+7. Onboarding flow for new users: 3-step guide shown on first dashboard visit
+   - Step 1: "Add your first contact" with animated arrow pointing to FAB
+   - Step 2: "Log your first interaction"
+   - Step 3: "Try the AI assistant"
+8. Dark scrollbar styling across entire app
+9. "Copy to clipboard" on email/phone with visual feedback
+10. Contact detail: "Back to Contacts" breadcrumb navigation
+11. All delete actions require confirmation dialog
+12. Time-based greeting: "Good morning", "Good afternoon", "Good evening"
+13. Relative timestamps ("3 days ago") with full date on hover/tooltip
+14. Favicon and browser tab title update per page
+
+Build the complete application end-to-end with all pages, all API routes, database integration, authentication, and AI features working. Every page must be fully functional with real data — no placeholder "coming soon" pages. The app should be deployable and demo-ready immediately after setup.

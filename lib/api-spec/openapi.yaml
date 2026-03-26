@@ -1,22 +1,36 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: NexusLink Personal CRM API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: contacts
+    description: Contact management
+  - name: interactions
+    description: Interaction tracking
+  - name: tasks
+    description: Task management
+  - name: reminders
+    description: Reminder management
+  - name: ai
+    description: AI assistant features
+  - name: dashboard
+    description: Dashboard stats
+  - name: import-export
+    description: Import and export contacts
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +38,634 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      summary: Create user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me/update:
+    put:
+      operationId: updateMe
+      tags: [auth]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /contacts:
+    get:
+      operationId: listContacts
+      tags: [contacts]
+      summary: List all contacts
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: tag
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name, createdAt, lastInteraction]
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        "200":
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+    post:
+      operationId: createContact
+      tags: [contacts]
+      summary: Create a new contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContactRequest"
+      responses:
+        "201":
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  /contacts/{id}:
+    get:
+      operationId: getContact
+      tags: [contacts]
+      summary: Get contact with all related data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Contact details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateContact
+      tags: [contacts]
+      summary: Update contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContactRequest"
+      responses:
+        "200":
+          description: Updated contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+    delete:
+      operationId: deleteContact
+      tags: [contacts]
+      summary: Delete contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /contacts/{id}/tags:
+    post:
+      operationId: addContactTag
+      tags: [contacts]
+      summary: Add tag to contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TagRequest"
+      responses:
+        "201":
+          description: Tag added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactTag"
+
+  /contacts/{id}/tags/{tagId}:
+    delete:
+      operationId: removeContactTag
+      tags: [contacts]
+      summary: Remove tag from contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tag removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /interactions:
+    get:
+      operationId: listInteractions
+      tags: [interactions]
+      summary: List all interactions (global timeline)
+      parameters:
+        - name: contactId
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of interactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Interaction"
+    post:
+      operationId: createInteraction
+      tags: [interactions]
+      summary: Add a new interaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInteractionRequest"
+      responses:
+        "201":
+          description: Interaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interaction"
+
+  /interactions/{id}:
+    put:
+      operationId: updateInteraction
+      tags: [interactions]
+      summary: Update interaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInteractionRequest"
+      responses:
+        "200":
+          description: Updated interaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interaction"
+    delete:
+      operationId: deleteInteraction
+      tags: [interactions]
+      summary: Delete interaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List all tasks
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, done, all]
+        - name: contactId
+          in: query
+          schema:
+            type: string
+        - name: dueSoon
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    put:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update task (including marking complete)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /reminders:
+    get:
+      operationId: listReminders
+      tags: [reminders]
+      summary: List upcoming reminders
+      responses:
+        "200":
+          description: List of reminders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reminder"
+    post:
+      operationId: createReminder
+      tags: [reminders]
+      summary: Create reminder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReminderRequest"
+      responses:
+        "201":
+          description: Reminder created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reminder"
+
+  /reminders/{id}:
+    put:
+      operationId: updateReminder
+      tags: [reminders]
+      summary: Update reminder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReminderRequest"
+      responses:
+        "200":
+          description: Updated reminder
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reminder"
+    delete:
+      operationId: deleteReminder
+      tags: [reminders]
+      summary: Delete reminder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /ai/brief:
+    post:
+      operationId: generateAiBrief
+      tags: [ai]
+      summary: Generate contact brief
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiBriefRequest"
+      responses:
+        "200":
+          description: AI brief
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiBriefResponse"
+
+  /ai/draft-email:
+    post:
+      operationId: draftEmail
+      tags: [ai]
+      summary: Draft follow-up email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DraftEmailRequest"
+      responses:
+        "200":
+          description: Drafted email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DraftEmailResponse"
+
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [ai]
+      summary: AI assistant chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiChatRequest"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiChatResponse"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard aggregate stats
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /export/csv:
+    get:
+      operationId: exportCsv
+      tags: [import-export]
+      summary: Export contacts as CSV
+      responses:
+        "200":
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /import/csv:
+    post:
+      operationId: importCsv
+      tags: [import-export]
+      summary: Import contacts from CSV
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportCsvRequest"
+      responses:
+        "200":
+          description: Import result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportCsvResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +676,646 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+
+    SignupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - name
+        - email
+        - password
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+      required:
+        - user
+        - token
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          nullable: true
+        email:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+        plan:
+          type: string
+          enum: [free, pro, team]
+        timezone:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - plan
+        - timezone
+        - createdAt
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        timezone:
+          type: string
+        password:
+          type: string
+        currentPassword:
+          type: string
+
+    ContactTag:
+      type: object
+      properties:
+        id:
+          type: string
+        tag:
+          type: string
+        color:
+          type: string
+      required:
+        - id
+        - tag
+        - color
+
+    TagRequest:
+      type: object
+      properties:
+        tag:
+          type: string
+        color:
+          type: string
+      required:
+        - tag
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        linkedinUrl:
+          type: string
+          nullable: true
+        twitterUrl:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
+        whereMet:
+          type: string
+          nullable: true
+        introducedBy:
+          type: string
+          nullable: true
+        topicsDiscussed:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactTag"
+        lastInteractionAt:
+          type: string
+          format: date-time
+          nullable: true
+        taskCount:
+          type: integer
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+        - tags
+        - taskCount
+
+    ContactDetail:
+      allOf:
+        - $ref: "#/components/schemas/Contact"
+        - type: object
+          properties:
+            interactions:
+              type: array
+              items:
+                $ref: "#/components/schemas/Interaction"
+            tasks:
+              type: array
+              items:
+                $ref: "#/components/schemas/Task"
+            reminders:
+              type: array
+              items:
+                $ref: "#/components/schemas/Reminder"
+          required:
+            - interactions
+            - tasks
+            - reminders
+
+    CreateContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        linkedinUrl:
+          type: string
+          nullable: true
+        twitterUrl:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
+        whereMet:
+          type: string
+          nullable: true
+        introducedBy:
+          type: string
+          nullable: true
+        topicsDiscussed:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              tag:
+                type: string
+              color:
+                type: string
+            required:
+              - tag
+      required:
+        - name
+
+    Interaction:
+      type: object
+      properties:
+        id:
+          type: string
+        contactId:
+          type: string
+        userId:
+          type: string
+        type:
+          type: string
+          enum: [call, meeting, email, note, dm, event]
+        summary:
+          type: string
+        source:
+          type: string
+          enum: [manual, calendar, gmail]
+        occurredAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        contactName:
+          type: string
+          nullable: true
+        contactAvatarUrl:
+          type: string
+          nullable: true
+      required:
+        - id
+        - contactId
+        - userId
+        - type
+        - summary
+        - source
+        - occurredAt
+        - createdAt
+
+    CreateInteractionRequest:
+      type: object
+      properties:
+        contactId:
+          type: string
+        type:
+          type: string
+          enum: [call, meeting, email, note, dm, event]
+        summary:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        source:
+          type: string
+          enum: [manual, calendar, gmail]
+      required:
+        - contactId
+        - type
+        - summary
+        - occurredAt
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        contactId:
+          type: string
+          nullable: true
+        userId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        priority:
+          type: string
+          enum: [low, medium, high]
+        status:
+          type: string
+          enum: [pending, done]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        contactName:
+          type: string
+          nullable: true
+        contactAvatarUrl:
+          type: string
+          nullable: true
+      required:
+        - id
+        - userId
+        - title
+        - priority
+        - status
+        - createdAt
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        contactId:
+          type: string
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        priority:
+          type: string
+          enum: [low, medium, high]
+      required:
+        - title
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        priority:
+          type: string
+          enum: [low, medium, high]
+        status:
+          type: string
+          enum: [pending, done]
+        contactId:
+          type: string
+          nullable: true
+
+    Reminder:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        contactId:
+          type: string
+          nullable: true
+        taskId:
+          type: string
+          nullable: true
+        message:
+          type: string
+        remindAt:
+          type: string
+          format: date-time
+        sent:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        contactName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - userId
+        - message
+        - remindAt
+        - sent
+        - createdAt
+
+    CreateReminderRequest:
+      type: object
+      properties:
+        contactId:
+          type: string
+          nullable: true
+        taskId:
+          type: string
+          nullable: true
+        message:
+          type: string
+        remindAt:
+          type: string
+          format: date-time
+      required:
+        - message
+        - remindAt
+
+    AiBriefRequest:
+      type: object
+      properties:
+        contactId:
+          type: string
+      required:
+        - contactId
+
+    AiBriefResponse:
+      type: object
+      properties:
+        brief:
+          type: string
+        contactId:
+          type: string
+      required:
+        - brief
+        - contactId
+
+    DraftEmailRequest:
+      type: object
+      properties:
+        contactId:
+          type: string
+        context:
+          type: string
+          nullable: true
+      required:
+        - contactId
+
+    DraftEmailResponse:
+      type: object
+      properties:
+        subject:
+          type: string
+        body:
+          type: string
+      required:
+        - subject
+        - body
+
+    AiChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - role
+        - content
+
+    AiChatRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiChatMessage"
+        contactId:
+          type: string
+          nullable: true
+      required:
+        - messages
+
+    AiChatResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        role:
+          type: string
+      required:
+        - message
+        - role
+
+    DashboardStats:
+      type: object
+      properties:
+        totalContacts:
+          type: integer
+        interactionsThisWeek:
+          type: integer
+        tasksDueToday:
+          type: integer
+        upcomingMeetings:
+          type: integer
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/Interaction"
+        todaysFocus:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        upcomingReminders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reminder"
+        interactionsByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              count:
+                type: integer
+            required:
+              - date
+              - count
+        tagDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              tag:
+                type: string
+              count:
+                type: integer
+              color:
+                type: string
+            required:
+              - tag
+              - count
+              - color
+      required:
+        - totalContacts
+        - interactionsThisWeek
+        - tasksDueToday
+        - upcomingMeetings
+        - recentActivity
+        - todaysFocus
+        - upcomingReminders
+        - interactionsByDay
+        - tagDistribution
+
+    ImportCsvRequest:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+      required:
+        - rows
+
+    ImportCsvResponse:
+      type: object
+      properties:
+        imported:
+          type: integer
+        failed:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - imported
+        - failed
+        - errors

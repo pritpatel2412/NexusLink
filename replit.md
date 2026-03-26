@@ -1,8 +1,8 @@
-# Workspace
+# NexusLink - Personal CRM & AI Memory Assistant
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+A premium full-stack SaaS Personal CRM application for founders, freelancers, and creators. Built with a dark luxury design featuring electric indigo/violet accents.
 
 ## Stack
 
@@ -14,83 +14,106 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Database**: PostgreSQL + Drizzle ORM
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
+- **Build**: esbuild (ESM bundle)
+- **Frontend**: React 19 + Vite + Tailwind CSS + Framer Motion
+- **AI**: OpenAI via Replit AI Integrations (no API key needed)
+- **Auth**: JWT (Bearer token stored in localStorage)
 
 ## Structure
 
 ```text
-artifacts-monorepo/
-├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
-├── lib/                    # Shared libraries
+workspace/
+├── artifacts/
+│   ├── api-server/         # Express API server (backend)
+│   └── nexuslink/          # React + Vite frontend (serves at /)
+├── lib/
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
 │   ├── api-zod/            # Generated Zod schemas from OpenAPI
 │   └── db/                 # Drizzle ORM schema + DB connection
-├── scripts/                # Utility scripts (single workspace package)
-│   └── src/                # Individual .ts scripts, run via `pnpm --filter @workspace/scripts run <script>`
-├── pnpm-workspace.yaml     # pnpm workspace (artifacts/*, lib/*, lib/integrations/*, scripts)
-├── tsconfig.base.json      # Shared TS options (composite, bundler resolution, es2022)
-├── tsconfig.json           # Root TS project references
-└── package.json            # Root package with hoisted devDeps
+├── scripts/
+│   └── src/seed.ts         # Database seed script
+└── ...
 ```
 
-## TypeScript & Composite Projects
+## Application Pages
 
-Every package extends `tsconfig.base.json` which sets `composite: true`. The root `tsconfig.json` lists all packages as project references. This means:
+**Public Routes:**
+- `/` — Landing page with hero, features, pricing
+- `/login` — Login form (email + password)
+- `/signup` — Signup form
 
-- **Always typecheck from the root** — run `pnpm run typecheck` (which runs `tsc --build --emitDeclarationOnly`). This builds the full dependency graph so that cross-package imports resolve correctly. Running `tsc` inside a single package will fail if its dependencies haven't been built yet.
-- **`emitDeclarationOnly`** — we only emit `.d.ts` files during typecheck; actual JS bundling is handled by esbuild/tsx/vite...etc, not `tsc`.
-- **Project references** — when package A depends on package B, A's `tsconfig.json` must list B in its `references` array. `tsc --build` uses this to determine build order and skip up-to-date packages.
+**Protected Routes (require auth):**
+- `/dashboard` — Stats, activity feed, charts, today's focus
+- `/contacts` — Contacts list (grid/table view), search, filter
+- `/contacts/new` — Add new contact form
+- `/contacts/:id` — Contact detail with timeline, tasks, AI brief
+- `/ai-assistant` — AI chat assistant with context panel
+- `/timeline` — Global activity timeline (placeholder)
+- `/tasks` — Tasks management (placeholder)
+- `/reminders` — Reminders calendar (placeholder)
+- `/settings` — User settings (placeholder)
 
-## Root Scripts
+## API Endpoints
 
-- `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
-- `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
+All routes prefixed with `/api`:
+- `POST /auth/signup` — Create account
+- `POST /auth/login` — Login (returns JWT)
+- `POST /auth/logout` — Logout
+- `GET /auth/me` — Get current user
+- `PUT /auth/me/update` — Update profile
+- `GET/POST /contacts` — List/Create contacts
+- `GET/PUT/DELETE /contacts/:id` — Contact CRUD
+- `POST /contacts/:id/tags` — Add tag
+- `DELETE /contacts/:id/tags/:tagId` — Remove tag
+- `GET/POST /interactions` — List/Create interactions
+- `PUT/DELETE /interactions/:id` — Interaction CRUD
+- `GET/POST /tasks` — List/Create tasks
+- `PUT/DELETE /tasks/:id` — Task CRUD
+- `GET/POST /reminders` — List/Create reminders
+- `PUT/DELETE /reminders/:id` — Reminder CRUD
+- `POST /ai/brief` — Generate AI contact brief
+- `POST /ai/draft-email` — Draft follow-up email
+- `POST /ai/chat` — AI assistant chat
+- `GET /dashboard/stats` — Dashboard aggregate stats
+- `GET /export/csv` — Export contacts as CSV
+- `POST /import/csv` — Import contacts from CSV
 
-## Packages
+## Database Schema
 
-### `artifacts/api-server` (`@workspace/api-server`)
+- `users` — User accounts (id, name, email, password, plan, timezone)
+- `contacts` — CRM contacts with all profile fields
+- `contact_tags` — Tags associated with contacts
+- `interactions` — Interaction history (calls, meetings, emails, notes)
+- `tasks` — Tasks linked to contacts
+- `reminders` — Reminders linked to contacts/tasks
 
-Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` for request and response validation and `@workspace/db` for persistence.
+## Authentication
 
-- Entry: `src/index.ts` — reads `PORT`, starts Express
-- App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
-- Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
-- Depends on: `@workspace/db`, `@workspace/api-zod`
-- `pnpm --filter @workspace/api-server run dev` — run the dev server
-- `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
-- Build bundles an allowlist of deps (express, cors, pg, drizzle-orm, zod, etc.) and externalizes the rest
+- JWT-based authentication stored in localStorage
+- `setAuthTokenGetter` configured in `use-auth.ts` to auto-attach tokens
+- All protected routes redirect to `/login` when no token exists
 
-### `lib/db` (`@workspace/db`)
+## Demo Account
 
-Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client instance and schema models.
+- Email: `demo@nexuslink.app`
+- Password: `demo1234`
+- Pre-seeded with 12 realistic contacts, interactions, tasks, and reminders
 
-- `src/index.ts` — creates a `Pool` + Drizzle instance, exports schema
-- `src/schema/index.ts` — barrel re-export of all models
-- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas (no models definitions exist right now)
-- `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
-- Exports: `.` (pool, db, schema), `./schema` (schema only)
+## Seed Data
 
-Production migrations are handled by Replit when publishing. In development, we just use `pnpm --filter @workspace/db run push`, and we fallback to `pnpm --filter @workspace/db run push-force`.
+Run `pnpm --filter @workspace/scripts run seed` to reseed the database.
 
-### `lib/api-spec` (`@workspace/api-spec`)
+## Design
 
-Owns the OpenAPI 3.1 spec (`openapi.yaml`) and the Orval config (`orval.config.ts`). Running codegen produces output into two sibling packages:
+- Dark luxury theme: `#0A0A0F` backgrounds, `#6C63FF` electric indigo accents
+- Fonts: Syne (display), DM Sans (body), JetBrains Mono (mono)
+- Framer Motion animations throughout
+- Responsive design with mobile-first approach
 
-1. `lib/api-client-react/src/generated/` — React Query hooks + fetch client
-2. `lib/api-zod/src/generated/` — Zod schemas
+## AI Features
 
-Run codegen: `pnpm --filter @workspace/api-spec run codegen`
-
-### `lib/api-zod` (`@workspace/api-zod`)
-
-Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used by `api-server` for response validation.
-
-### `lib/api-client-react` (`@workspace/api-client-react`)
-
-Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
-
-### `scripts` (`@workspace/scripts`)
-
-Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+- Contact brief generation (pre-meeting summary)
+- Follow-up email drafting
+- Conversational AI assistant with contact context
+- Powered by OpenAI via Replit AI Integrations (no API key required, billed to credits)
