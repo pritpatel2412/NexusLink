@@ -4,10 +4,13 @@ import {
   Sparkles, BrainCircuit, Zap, ArrowRight, CheckCircle2,
   CheckSquare, Play, Pause, Users, MessageSquare, Bell,
   Star, Clock, Shield, Globe, ChevronRight, Mail,
-  Calendar, Phone, FileText, TrendingUp, X
+  Calendar, Phone, FileText, TrendingUp, X,
+  Check, RefreshCw, Crown, Brain, Headphones
 } from "lucide-react";
 import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 // ─── Animated Counter ──────────────────────────────────────────────────
 function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -415,6 +418,8 @@ const FEATURES = [
 // ─── Main Page ─────────────────────────────────────────────────────────
 export default function LandingPage() {
   const [hoveredTestimonial, setHoveredTestimonial] = useState<number | null>(null);
+  const [pricingINR, setPricingINR] = useState(false);
+  const { toast } = useToast();
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -783,82 +788,255 @@ export default function LandingPage() {
 
         {/* ── Pricing ── */}
         <section id="pricing" className="py-24 px-6">
-          <div className="container mx-auto max-w-4xl">
+          <div className="container mx-auto max-w-5xl">
+
+            {/* Header */}
             <motion.div
-              className="text-center mb-16"
+              className="text-center mb-10"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-5">
+                <Sparkles className="w-3.5 h-3.5" />
+                Simple, transparent pricing
+              </div>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-                Simple, Transparent Pricing
+                Invest in your{" "}
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">relationships</span>
               </h2>
-              <p className="text-muted-foreground">Start free. Upgrade when you're ready.</p>
+              <p className="text-muted-foreground text-lg">Start free. Upgrade when you're ready. Pay in USD or INR.</p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            {/* Currency Toggle */}
+            <motion.div
+              className="flex justify-center mb-8"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="relative flex items-center gap-1 p-1.5 rounded-2xl bg-card border border-border/60 shadow-lg">
+                <motion.div
+                  className="absolute top-1.5 bottom-1.5 rounded-xl bg-primary/15 border border-primary/25"
+                  animate={{ left: pricingINR ? "calc(50% + 2px)" : "6px", right: pricingINR ? "6px" : "calc(50% + 2px)" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                />
+                <button
+                  onClick={() => setPricingINR(false)}
+                  className={cn(
+                    "relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors min-w-[130px] justify-center",
+                    !pricingINR ? "text-white" : "text-muted-foreground hover:text-white/70"
+                  )}
+                >
+                  <span className="text-base">🇺🇸</span>
+                  <div className="text-left">
+                    <p className="text-[11px] font-bold leading-none">USD</p>
+                    <p className="text-[10px] font-normal text-muted-foreground leading-none mt-0.5">via Stripe</p>
+                  </div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#635BFF] flex items-center justify-center">
+                    <span className="text-[6px] text-white font-black">S</span>
+                  </div>
+                </button>
+                <div className="w-px h-5 bg-border/60 relative z-10" />
+                <button
+                  onClick={() => setPricingINR(true)}
+                  className={cn(
+                    "relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors min-w-[130px] justify-center",
+                    pricingINR ? "text-white" : "text-muted-foreground hover:text-white/70"
+                  )}
+                >
+                  <span className="text-base">🇮🇳</span>
+                  <div className="text-left">
+                    <p className="text-[11px] font-bold leading-none">INR</p>
+                    <p className="text-[10px] font-normal text-muted-foreground leading-none mt-0.5">via Razorpay</p>
+                  </div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#3395FF] flex items-center justify-center">
+                    <span className="text-[6px] text-white font-black">R</span>
+                  </div>
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Flip hint */}
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={pricingINR ? "inr" : "usd"}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-center text-xs text-muted-foreground/55 -mt-2 mb-10 flex items-center justify-center gap-1.5"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Showing {pricingINR ? "₹ INR · Razorpay" : "$ USD · Stripe"} — toggle to switch
+              </motion.p>
+            </AnimatePresence>
+
+            {/* 3-column flip cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {[
                 {
-                  plan: "Free", price: "$0", period: "forever", badge: null,
-                  features: ["Up to 100 contacts", "Unlimited interactions", "AI briefs (10/month)", "Basic task management", "CSV export"],
-                  cta: "Start Free", href: "/signup", primary: false,
+                  id: "starter", Icon: Zap, label: "Starter", badge: null,
+                  usd: { price: 0, label: "Free" }, inr: { price: 0, label: "Free" },
+                  color: "from-slate-500/15 to-slate-600/15", border: "border-white/10",
+                  features: ["Up to 50 contacts", "Basic timeline", "5 AI queries / day", "Task & reminder management", "CSV export", "Email support"],
                 },
                 {
-                  plan: "Pro", price: "$19", period: "/month", badge: "Most Popular",
-                  features: ["Unlimited contacts", "Unlimited AI briefs & chat", "Email draft generation", "Smart reminders", "Priority support", "Team sharing (coming soon)"],
-                  cta: "Start Pro Trial", href: "/signup", primary: true,
+                  id: "pro", Icon: Brain, label: "Pro", badge: "Most Popular",
+                  usd: { price: 12, label: "$12" }, inr: { price: 999, label: "₹999" },
+                  color: "from-primary/20 to-accent/15", border: "border-primary/40",
+                  features: ["Unlimited contacts", "Full AI assistant — chat, briefs, score", "Network Pulse & Relationship IQ", "Smart Note Summarizer", "Voice input + file attachments", "Priority support"],
                 },
-              ].map((tier, i) => (
-                <motion.div
-                  key={i}
-                  className={`relative rounded-3xl p-8 border ${tier.primary ? "border-primary/40 bg-gradient-to-b from-primary/10 to-card/80" : "border-white/5 bg-card/60"}`}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  whileHover={{ y: -4 }}
-                >
-                  {tier.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg shadow-primary/30">
-                      {tier.badge}
-                    </div>
-                  )}
-                  {tier.primary && (
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-                  )}
-                  <div className="relative z-10">
-                    <p className="text-muted-foreground font-medium mb-2">{tier.plan}</p>
-                    <div className="flex items-end gap-1 mb-6">
-                      <span className="font-display text-5xl font-extrabold text-white">{tier.price}</span>
-                      <span className="text-muted-foreground mb-2">{tier.period}</span>
-                    </div>
-                    <div className="space-y-3 mb-8">
-                      {tier.features.map((f, j) => (
-                        <motion.div
-                          key={j}
-                          className="flex items-center gap-3 text-sm"
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: j * 0.06 }}
+                {
+                  id: "enterprise", Icon: Crown, label: "Enterprise", badge: "Best Value",
+                  usd: { price: 49, label: "$49" }, inr: { price: 3999, label: "₹3,999" },
+                  color: "from-amber-500/15 to-orange-500/10", border: "border-amber-500/25",
+                  features: ["Everything in Pro", "Team workspace — up to 10 users", "Custom AI persona & tone", "CRM data API access", "Dedicated account manager", "99.9% uptime SLA"],
+                },
+              ].map((plan, i) => {
+                const isPro = plan.id === "pro";
+                const isFree = pricingINR ? plan.inr.price === 0 : plan.usd.price === 0;
+                const displayPrice = pricingINR ? plan.inr.label : plan.usd.label;
+
+                return (
+                  <motion.div
+                    key={plan.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    style={{ perspective: "1200px" }}
+                  >
+                    <motion.div
+                      animate={{ rotateY: pricingINR ? 180 : 0 }}
+                      transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ transformStyle: "preserve-3d", position: "relative", minHeight: 460 }}
+                    >
+                      {/* Front — USD / Stripe */}
+                      {[false, true].map((isBack) => (
+                        <div
+                          key={String(isBack)}
+                          style={{
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                            ...(isBack ? { transform: "rotateY(180deg)", position: "absolute", inset: 0 } : {}),
+                          }}
+                          className={cn(
+                            "rounded-3xl border bg-gradient-to-br p-6 flex flex-col h-full",
+                            plan.color, plan.border,
+                            isPro && "ring-1 ring-primary/30",
+                            !isBack && "absolute inset-0"
+                          )}
                         >
-                          <CheckCircle2 className={`w-4 h-4 shrink-0 ${tier.primary ? "text-primary" : "text-emerald-400"}`} />
-                          <span className="text-gray-300">{f}</span>
-                        </motion.div>
+                          {/* Badge */}
+                          {plan.badge && (
+                            <div className={cn(
+                              "self-start mb-3 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest uppercase",
+                              isPro ? "bg-primary/20 text-primary border border-primary/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                            )}>
+                              {plan.badge}
+                            </div>
+                          )}
+
+                          {/* Name */}
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", isPro ? "bg-primary/20 border border-primary/30" : "bg-white/8 border border-white/10")}>
+                              <plan.Icon className={cn("w-4 h-4", isPro ? "text-primary" : "text-white/70")} />
+                            </div>
+                            <h3 className="font-display font-bold text-lg text-white">{plan.label}</h3>
+                          </div>
+
+                          {/* Price */}
+                          <div className="mb-1">
+                            {(isBack ? plan.inr.price === 0 : plan.usd.price === 0) ? (
+                              <p className="text-3xl font-display font-black text-white">Free</p>
+                            ) : (
+                              <div className="flex items-end gap-1">
+                                <p className="text-3xl font-display font-black text-white">{isBack ? plan.inr.label : plan.usd.label}</p>
+                                <p className="text-muted-foreground text-sm mb-1">/ month</p>
+                              </div>
+                            )}
+                            <p className="text-[11px] text-muted-foreground mt-1 mb-4">
+                              {(isBack ? plan.inr.price === 0 : plan.usd.price === 0) ? "No credit card required" : isBack ? "Billed monthly · Razorpay" : "Billed monthly · Stripe"}
+                            </p>
+                          </div>
+
+                          {/* Provider badge */}
+                          {!(isBack ? plan.inr.price === 0 : plan.usd.price === 0) && (
+                            <div className={cn("flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border mb-4 w-fit", isBack ? "bg-blue-500/8 border-blue-500/20" : "bg-violet-500/8 border-violet-500/20")}>
+                              <div className={cn("w-3.5 h-3.5 rounded-sm flex items-center justify-center", isBack ? "bg-[#3395FF]" : "bg-[#635BFF]")}>
+                                <span className="text-[6px] text-white font-black">{isBack ? "R" : "S"}</span>
+                              </div>
+                              <span className={cn("text-[11px] font-medium", isBack ? "text-blue-300" : "text-violet-300")}>{isBack ? "Razorpay" : "Stripe"}</span>
+                            </div>
+                          )}
+
+                          <div className="border-t border-white/8 mb-4" />
+
+                          {/* Features */}
+                          <ul className="space-y-2 flex-1">
+                            {plan.features.map((f) => (
+                              <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
+                                <Check className={cn("w-3.5 h-3.5 mt-0.5 shrink-0", isPro ? "text-primary" : "text-emerald-400")} />
+                                {f}
+                              </li>
+                            ))}
+                          </ul>
+
+                          {/* CTA */}
+                          <button
+                            onClick={() => {
+                              if (isBack ? plan.inr.price === 0 : plan.usd.price === 0) {
+                                window.location.href = "/signup";
+                              } else if (isBack) {
+                                toast({ title: "Razorpay Checkout", description: `Opening Razorpay for ${plan.label} at ${plan.inr.label}/month.` });
+                              } else {
+                                toast({ title: "Stripe Checkout", description: `Opening Stripe for ${plan.label} at ${plan.usd.label}/month.` });
+                              }
+                            }}
+                            className={cn(
+                              "mt-5 w-full py-3 rounded-2xl font-semibold text-sm transition-all flex items-center justify-center gap-1.5",
+                              (isBack ? plan.inr.price === 0 : plan.usd.price === 0)
+                                ? "bg-white/8 border border-white/12 text-white hover:bg-white/12"
+                                : isPro
+                                ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25 hover:opacity-90 hover:scale-[1.02]"
+                                : "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/15 hover:opacity-90 hover:scale-[1.02]"
+                            )}
+                          >
+                            {(isBack ? plan.inr.price === 0 : plan.usd.price === 0)
+                              ? "Get Started Free"
+                              : isBack
+                              ? "Pay with Razorpay →"
+                              : "Pay with Stripe →"}
+                          </button>
+                        </div>
                       ))}
-                    </div>
-                    <Link href={tier.href}>
-                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                        <Button className={`w-full h-12 rounded-xl font-semibold ${tier.primary ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25" : "bg-white/10 text-white hover:bg-white/20 border border-white/10"}`}>
-                          {tier.cta}
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                      </motion.div>
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
             </div>
+
+            {/* Trust strip */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-wrap items-center justify-center gap-8 mt-12 pt-8 border-t border-border/30"
+            >
+              {[
+                { icon: Shield, text: "256-bit SSL" },
+                { icon: Globe, text: "GDPR Compliant" },
+                { icon: RefreshCw, text: "Cancel Anytime" },
+                { icon: Headphones, text: "24/7 Support" },
+              ].map(({ icon: Icon, text }) => (
+                <div key={text} className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <Icon className="w-4 h-4 text-primary/60" />
+                  {text}
+                </div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
