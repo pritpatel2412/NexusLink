@@ -23,6 +23,9 @@ import RemindersPage from "@/pages/reminders/index";
 import AiAssistantPage from "@/pages/ai-assistant/index";
 import SettingsPage from "@/pages/settings/index";
 import PricingPage from "@/pages/pricing/index";
+import PrivacyPage from "@/pages/privacy/index";
+import TermsPage from "@/pages/terms/index";
+import ContactPage from "@/pages/contact/index";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -87,6 +90,9 @@ function Router() {
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
       <Route path="/pricing" component={PricingPage} />
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/contact" component={ContactPage} />
 
       <Route component={NotFound} />
     </Switch>
