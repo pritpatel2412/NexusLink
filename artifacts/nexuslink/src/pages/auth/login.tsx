@@ -80,7 +80,7 @@ export default function LoginPage() {
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-gray-300">Password</FormLabel>
-                    <a href="#" className="text-sm text-primary hover:text-primary/80 transition-colors">Forgot password?</a>
+                    <Link href="/forgot-password" className="text-sm text-primary hover:text-primary/80 transition-colors">Forgot password?</Link>
                   </div>
                   <FormControl>
                     <Input 

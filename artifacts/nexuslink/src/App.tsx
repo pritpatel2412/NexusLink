@@ -11,6 +11,8 @@ import { Loader2 } from "lucide-react";
 import LandingPage from "@/pages/landing";
 import LoginPage from "@/pages/auth/login";
 import SignupPage from "@/pages/auth/signup";
+import ForgotPasswordPage from "@/pages/auth/forgot-password";
+import ResetPasswordPage from "@/pages/auth/reset-password";
 import DashboardPage from "@/pages/dashboard/index";
 import ContactsPage from "@/pages/contacts/index";
 import NewContactPage from "@/pages/contacts/new";
@@ -53,6 +55,8 @@ function Router() {
       <Route path="/" component={LandingPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignupPage} />
+      <Route path="/forgot-password" component={ForgotPasswordPage} />
+      <Route path="/reset-password" component={ResetPasswordPage} />
 
       <Route path="/dashboard">
         {() => <ProtectedRoute component={DashboardPage} />}

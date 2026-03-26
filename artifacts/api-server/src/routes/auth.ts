@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { usersTable, passwordResetTokensTable } from "@workspace/db/schema";
+import { eq, and, gt } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { generateToken, requireAuth, getCurrentUser } from "../lib/auth.js";
+import { sendEmail, buildPasswordResetEmail, buildWelcomeEmail } from "../lib/email.js";
+import crypto from "crypto";
 
 const router = Router();
 
@@ -36,6 +38,17 @@ router.post("/signup", async (req, res) => {
       plan: "free",
       timezone: "UTC",
     }).returning();
+
+    try {
+      const appUrl = process.env.APP_URL || "http://localhost:3000";
+      await sendEmail({
+        to: email,
+        subject: "Welcome to NexusLink 🎉",
+        html: buildWelcomeEmail({ userName: name, loginUrl: `${appUrl}/login` }),
+      });
+    } catch (emailErr) {
+      req.log.warn({ emailErr }, "Failed to send welcome email (non-fatal)");
+    }
 
     const token = generateToken(user.id);
     const { password: _, ...safeUser } = user;
@@ -113,6 +126,97 @@ router.put("/me/update", requireAuth, async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "update user error");
     res.status(500).json({ error: "Internal Server Error", message: "Failed to update profile" });
+  }
+});
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      res.status(400).json({ error: "Bad Request", message: "Email is required" });
+      return;
+    }
+
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email));
+
+    if (!user) {
+      res.json({ success: true, message: "If that email exists, a reset link has been sent." });
+      return;
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    await db.delete(passwordResetTokensTable)
+      .where(eq(passwordResetTokensTable.userId, user.id));
+
+    await db.insert(passwordResetTokensTable).values({
+      id: nanoid(),
+      userId: user.id,
+      token,
+      expiresAt,
+      used: false,
+    });
+
+    const appUrl = process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const resetUrl = `${appUrl}/reset-password?token=${token}`;
+
+    await sendEmail({
+      to: email,
+      subject: "Reset your NexusLink password",
+      html: buildPasswordResetEmail({
+        userName: user.name || "there",
+        resetUrl,
+      }),
+    });
+
+    req.log.info({ email, resetUrl }, "Password reset email sent");
+    res.json({ success: true, message: "If that email exists, a reset link has been sent." });
+  } catch (err) {
+    req.log.error({ err }, "forgot-password error");
+    res.status(500).json({ error: "Internal Server Error", message: "Failed to send reset email" });
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      res.status(400).json({ error: "Bad Request", message: "Token and new password are required" });
+      return;
+    }
+    if (password.length < 6) {
+      res.status(400).json({ error: "Bad Request", message: "Password must be at least 6 characters" });
+      return;
+    }
+
+    const [resetToken] = await db.select().from(passwordResetTokensTable)
+      .where(
+        and(
+          eq(passwordResetTokensTable.token, token),
+          eq(passwordResetTokensTable.used, false),
+          gt(passwordResetTokensTable.expiresAt, new Date()),
+        )
+      );
+
+    if (!resetToken) {
+      res.status(400).json({ error: "Bad Request", message: "This reset link is invalid or has expired." });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    await db.update(usersTable)
+      .set({ password: hashedPassword, updatedAt: new Date() })
+      .where(eq(usersTable.id, resetToken.userId));
+
+    await db.update(passwordResetTokensTable)
+      .set({ used: true })
+      .where(eq(passwordResetTokensTable.id, resetToken.id));
+
+    res.json({ success: true, message: "Password reset successfully. You can now log in." });
+  } catch (err) {
+    req.log.error({ err }, "reset-password error");
+    res.status(500).json({ error: "Internal Server Error", message: "Failed to reset password" });
   }
 });
 
