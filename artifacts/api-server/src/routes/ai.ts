@@ -58,8 +58,7 @@ ${tasks.map(t => `- [${t.priority.toUpperCase()}] ${t.title} (due: ${t.dueDate ?
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
-      temperature: 0.7,
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -112,8 +111,7 @@ router.post("/draft-email", async (req, res) => {
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
-      temperature: 0.7,
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -171,8 +169,7 @@ router.post("/chat", async (req, res) => {
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
-      temperature: 0.7,
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",

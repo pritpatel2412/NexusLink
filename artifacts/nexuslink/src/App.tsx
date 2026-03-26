@@ -13,24 +13,33 @@ import LoginPage from "@/pages/auth/login";
 import SignupPage from "@/pages/auth/signup";
 import DashboardPage from "@/pages/dashboard/index";
 import ContactsPage from "@/pages/contacts/index";
+import NewContactPage from "@/pages/contacts/new";
 import ContactDetailPage from "@/pages/contacts/detail";
+import TimelinePage from "@/pages/timeline/index";
+import TasksPage from "@/pages/tasks/index";
+import RemindersPage from "@/pages/reminders/index";
 import AiAssistantPage from "@/pages/ai-assistant/index";
+import SettingsPage from "@/pages/settings/index";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, isLoading } = useAuth();
-  
+
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
-  
+
   if (!user) {
     window.location.href = "/login";
     return null;
   }
-  
+
   return (
     <DashboardLayout>
       <Component />
@@ -44,34 +53,35 @@ function Router() {
       <Route path="/" component={LandingPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignupPage} />
-      
+
       <Route path="/dashboard">
         {() => <ProtectedRoute component={DashboardPage} />}
       </Route>
-      <Route path="/contacts">
-        {() => <ProtectedRoute component={ContactsPage} />}
+      <Route path="/contacts/new">
+        {() => <ProtectedRoute component={NewContactPage} />}
       </Route>
       <Route path="/contacts/:id">
         {() => <ProtectedRoute component={ContactDetailPage} />}
       </Route>
+      <Route path="/contacts">
+        {() => <ProtectedRoute component={ContactsPage} />}
+      </Route>
+      <Route path="/timeline">
+        {() => <ProtectedRoute component={TimelinePage} />}
+      </Route>
+      <Route path="/tasks">
+        {() => <ProtectedRoute component={TasksPage} />}
+      </Route>
+      <Route path="/reminders">
+        {() => <ProtectedRoute component={RemindersPage} />}
+      </Route>
       <Route path="/ai-assistant">
         {() => <ProtectedRoute component={AiAssistantPage} />}
       </Route>
-
-      {/* Placeholders for routes specified but simpler pages */}
-      <Route path="/timeline">
-        {() => <ProtectedRoute component={() => <div className="p-8 text-white">Timeline coming soon</div>} />}
-      </Route>
-      <Route path="/tasks">
-        {() => <ProtectedRoute component={() => <div className="p-8 text-white">Tasks coming soon</div>} />}
-      </Route>
-      <Route path="/reminders">
-        {() => <ProtectedRoute component={() => <div className="p-8 text-white">Reminders coming soon</div>} />}
-      </Route>
       <Route path="/settings">
-        {() => <ProtectedRoute component={() => <div className="p-8 text-white">Settings coming soon</div>} />}
+        {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
-      
+
       <Route component={NotFound} />
     </Switch>
   );
