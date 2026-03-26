@@ -121,11 +121,14 @@ router.post("/", async (req, res) => {
 
     if (tagsInput && Array.isArray(tagsInput)) {
       for (const t of tagsInput) {
+        const tagName = typeof t === "string" ? t : t.tag;
+        const tagColor = typeof t === "string" ? "#6C63FF" : (t.color || "#6C63FF");
+        if (!tagName) continue;
         await db.insert(contactTagsTable).values({
           id: nanoid(),
           contactId: id,
-          tag: t.tag,
-          color: t.color || "#6C63FF",
+          tag: tagName,
+          color: tagColor,
         });
       }
     }
