@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  LayoutDashboard, Users, Clock, CheckSquare, 
-  Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X
+  LayoutDashboard, Users, Clock, CheckSquare,
+  Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X, CreditCard
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils";
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { path: "/tasks",        label: "Tasks",        icon: CheckSquare },
   { path: "/reminders",    label: "Reminders",    icon: Bell },
   { path: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
+  { path: "/pricing",      label: "Pricing",      icon: CreditCard },
   { path: "/settings",     label: "Settings",     icon: Settings },
 ];
 

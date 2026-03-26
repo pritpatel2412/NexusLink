@@ -22,6 +22,7 @@ import TasksPage from "@/pages/tasks/index";
 import RemindersPage from "@/pages/reminders/index";
 import AiAssistantPage from "@/pages/ai-assistant/index";
 import SettingsPage from "@/pages/settings/index";
+import PricingPage from "@/pages/pricing/index";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -85,6 +86,7 @@ function Router() {
       <Route path="/settings">
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
+      <Route path="/pricing" component={PricingPage} />
 
       <Route component={NotFound} />
     </Switch>
