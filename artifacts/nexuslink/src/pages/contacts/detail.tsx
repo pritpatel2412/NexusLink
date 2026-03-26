@@ -11,6 +11,8 @@ import {
   MessageSquare, Calendar, Sparkles, CheckSquare, Loader2,
   FileText, X, Globe, Linkedin
 } from "lucide-react";
+import { RelationshipScore } from "@/components/ai/RelationshipScore";
+import { SmartSummarizer } from "@/components/ai/SmartSummarizer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -315,8 +317,9 @@ export default function ContactDetailPage() {
                 className="flex-1 md:w-full bg-transparent border-white/10 hover:bg-white/5"
                 onClick={() => setShowBrief(v => !v)}
               >
-                <Sparkles className="w-4 h-4 mr-2 text-accent" /> {showBrief ? "Hide Brief" : "Get AI Brief"}
+                <Sparkles className="w-4 h-4 mr-2 text-accent" /> {showBrief ? "Hide Brief" : "Meeting Brief"}
               </Button>
+              <SmartSummarizer contactId={id} />
             </div>
           </div>
 
@@ -381,8 +384,11 @@ export default function ContactDetailPage() {
               </div>
             </div>
 
-            {/* Right: Info + Tasks */}
+            {/* Right: AI Score + Info + Tasks */}
             <div className="space-y-6">
+
+              {/* AI Relationship Intelligence Score */}
+              <RelationshipScore contactId={id} />
 
               {/* Contact Info */}
               <div className="bg-card border border-border/50 rounded-3xl p-6">
