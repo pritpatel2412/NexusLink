@@ -96,7 +96,7 @@ export default function NewContactPage() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">Full Name *</label>
                   <Input value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" className="bg-background/50 border-white/10 h-11" autoFocus />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jane@example.com" className="bg-background/50 border-white/10 h-11" />
@@ -106,7 +106,7 @@ export default function NewContactPage() {
                     <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="bg-background/50 border-white/10 h-11" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Company</label>
                     <Input value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Corp" className="bg-background/50 border-white/10 h-11" />

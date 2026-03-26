@@ -210,23 +210,23 @@ function ProductDemoVideo() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           {/* Browser bar */}
-          <div className="flex items-center gap-2 px-4 py-3 bg-[#0A0A10] border-b border-white/5">
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-rose-500/70" />
-              <div className="w-3 h-3 rounded-full bg-amber-500/70" />
-              <div className="w-3 h-3 rounded-full bg-emerald-500/70" />
+          <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-[#0A0A10] border-b border-white/5">
+            <div className="flex gap-1.5 shrink-0">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-rose-500/70" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500/70" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500/70" />
             </div>
-            <div className="flex-1 mx-4 h-6 bg-white/5 border border-white/5 rounded-md flex items-center px-3 gap-2">
-              <Shield className="w-3 h-3 text-emerald-400/60" />
-              <span className="text-[10px] text-white/30">app.nexuslink.io/dashboard</span>
+            <div className="hidden sm:flex flex-1 mx-2 sm:mx-4 h-6 bg-white/5 border border-white/5 rounded-md items-center px-3 gap-2 min-w-0">
+              <Shield className="w-3 h-3 text-emerald-400/60 shrink-0" />
+              <span className="text-[10px] text-white/30 truncate">app.nexuslink.io/dashboard</span>
             </div>
-            {/* Screen tabs */}
-            <div className="flex gap-1">
+            {/* Screen tabs — scrollable on mobile */}
+            <div className="flex gap-1 overflow-x-auto scrollbar-none flex-1 sm:flex-none">
               {DEMO_SCREENS.map((s, i) => (
                 <button
                   key={i}
                   onClick={() => { setActiveScreen(i); setIsPlaying(false); }}
-                  className={`text-[9px] px-2.5 py-1 rounded-md transition-all font-medium ${activeScreen === i ? "bg-primary/20 text-primary" : "text-white/30 hover:text-white/60"}`}
+                  className={`text-[9px] px-2 sm:px-2.5 py-1 rounded-md transition-all font-medium whitespace-nowrap shrink-0 ${activeScreen === i ? "bg-primary/20 text-primary" : "text-white/30 hover:text-white/60"}`}
                 >
                   {s.label}
                 </button>
@@ -235,7 +235,7 @@ function ProductDemoVideo() {
           </div>
 
           {/* App shell */}
-          <div className="flex h-[380px]">
+          <div className="flex h-[280px] sm:h-[340px] md:h-[380px]">
             {/* Sidebar */}
             <div className="w-14 bg-[#080810] border-r border-white/5 flex flex-col items-center pt-4 gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20">
@@ -508,7 +508,7 @@ export default function LandingPage() {
 
             <motion.h1
               variants={fadeUp}
-              className="font-display text-6xl md:text-8xl font-extrabold tracking-tight mb-8 leading-[1.05] text-white"
+              className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-8 leading-[1.05] text-white"
             >
               Your Second Brain for{" "}
               <br />

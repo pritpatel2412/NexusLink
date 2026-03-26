@@ -94,10 +94,10 @@ export default function SettingsPage() {
         <p className="text-muted-foreground mt-1">Manage your account preferences and data.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar tabs */}
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+        {/* Tabs — horizontal scroll on mobile, vertical sidebar on desktop */}
         <div className="md:w-48 flex-shrink-0">
-          <nav className="space-y-1">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto scrollbar-none pb-1 md:pb-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
@@ -105,13 +105,13 @@ export default function SettingsPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left",
+                    "flex items-center gap-2 md:gap-3 px-3 md:px-3 py-2 md:py-2.5 rounded-xl text-sm font-medium transition-all text-left whitespace-nowrap shrink-0 md:w-full",
                     activeTab === tab.id
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:text-white hover:bg-white/5"
                   )}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 shrink-0" />
                   {tab.label}
                 </button>
               );
