@@ -11,6 +11,7 @@ import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from "f
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import GradientBlinds from "@/components/ui/GradientBlinds";
 
 // ─── Animated Counter ──────────────────────────────────────────────────
 function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -435,14 +436,20 @@ export default function LandingPage() {
 
       {/* ── Ambient Background ── */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <FloatingOrb className="w-[600px] h-[600px] bg-primary top-[-200px] left-[-100px]" delay={0} />
-        <FloatingOrb className="w-[500px] h-[500px] bg-accent top-[20%] right-[-150px]" delay={2} />
-        <FloatingOrb className="w-[400px] h-[400px] bg-blue-600 bottom-[10%] left-[20%]" delay={4} />
-        <div className="absolute inset-0 bg-background/70" />
-        <div className="absolute inset-0 opacity-[0.015]" style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)",
-          backgroundSize: "40px 40px"
-        }} />
+        <GradientBlinds
+          gradientColors={['#FF9FFC', '#5227FF']}
+          angle={0}
+          noise={0.3}
+          blindCount={12}
+          blindMinWidth={50}
+          spotlightRadius={0.5}
+          spotlightSoftness={1}
+          spotlightOpacity={1}
+          mouseDampening={0.15}
+          distortAmount={0}
+          shineDirection="left"
+          mixBlendMode="lighten"
+        />
       </div>
 
       {/* ── Header ── */}

@@ -46,6 +46,9 @@ export default defineConfig({
         ]
       : []),
   ],
+  optimizeDeps: {
+    include: ["ogl"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
