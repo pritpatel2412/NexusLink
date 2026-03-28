@@ -14,6 +14,110 @@ import { cn } from "@/lib/utils";
 import GradientBlinds from "@/components/ui/GradientBlinds";
 import { InterstellarFluid } from "@/components/ui/InterstellarFluidHero";
 
+// ─── Elastic Letter (magnetic spring hover per character) ──────────────
+function ElasticLetter({ char }: { char: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const x = useSpring(rawX, { stiffness: 160, damping: 13, mass: 0.08 });
+  const y = useSpring(rawY, { stiffness: 160, damping: 13, mass: 0.08 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const radius = 140;
+      if (dist < radius) {
+        const t = 1 - dist / radius;
+        const pull = t * t * 38;
+        rawX.set((dx / Math.max(dist, 1)) * pull);
+        rawY.set((dy / Math.max(dist, 1)) * pull);
+      } else {
+        rawX.set(0);
+        rawY.set(0);
+      }
+    };
+    const onLeave = () => { rawX.set(0); rawY.set(0); };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+    };
+  }, [rawX, rawY]);
+
+  return (
+    <motion.span ref={ref} style={{ x, y, display: "inline-block" }}>
+      {char}
+    </motion.span>
+  );
+}
+
+// ─── Full-Width Wordmark Banner (scroll-reveal + elastic letters) ───────
+function WordmarkBanner() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: false, margin: "-8%" });
+
+  return (
+    <section ref={sectionRef} className="relative overflow-hidden" style={{ height: "20vw", minHeight: 120, maxHeight: 340 }}>
+      {/* CSS fallback gradient */}
+      <div className="absolute inset-0 z-0"
+        style={{ background: "radial-gradient(ellipse 80% 120% at 50% 60%, rgba(108,99,255,0.28) 0%, rgba(88,28,235,0.12) 40%, #0A0A0F 80%)" }} />
+      {/* Interstellar fluid */}
+      <div className="absolute inset-0 z-0">
+        <InterstellarFluid
+          baseColor={[0.0, 0.0, 0.04]}
+          glowColor={[0.42, 0.39, 1.0]}
+          dissipation={0.985}
+          interactive={true}
+        />
+      </div>
+      {/* Vignette */}
+      <div className="absolute inset-0 z-10 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(10,10,15,0.7) 100%)" }} />
+      {/* Top fade */}
+      <div className="absolute inset-x-0 top-0 z-10 h-12 pointer-events-none"
+        style={{ background: "linear-gradient(to bottom, #0A0A0F, transparent)" }} />
+      {/* Bottom fade */}
+      <div className="absolute inset-x-0 bottom-0 z-10 h-8 pointer-events-none"
+        style={{ background: "linear-gradient(to top, #0A0A0F, transparent)" }} />
+
+      {/* Scroll-reveal + elastic wordmark */}
+      <motion.div
+        className="absolute inset-0 z-20 flex items-center justify-center overflow-hidden"
+        initial={{ opacity: 0, y: 52, filter: "blur(14px)" }}
+        animate={isInView
+          ? { opacity: 1, y: 0, filter: "blur(0px)" }
+          : { opacity: 0, y: 52, filter: "blur(14px)" }}
+        transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div
+          className="font-display font-black leading-none select-none"
+          style={{ fontSize: "17.5vw", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}
+        >
+          {"NexusLink".split("").map((char, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 28 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+              transition={{ duration: 0.65, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: "inline-block" }}
+            >
+              <ElasticLetter char={char} />
+            </motion.span>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
 // ─── Animated Counter ──────────────────────────────────────────────────
 function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -1118,48 +1222,7 @@ export default function LandingPage() {
       </footer>
 
       {/* ── Full-Width Wordmark Banner ── */}
-      <section className="relative overflow-hidden" style={{ height: "20vw", minHeight: 120, maxHeight: 340 }}>
-        {/* CSS fallback gradient (always visible beneath WebGL) */}
-        <div className="absolute inset-0 z-0"
-          style={{ background: "radial-gradient(ellipse 80% 120% at 50% 60%, rgba(108,99,255,0.28) 0%, rgba(88,28,235,0.12) 40%, #0A0A0F 80%)" }} />
-        {/* Interstellar fluid background */}
-        <div className="absolute inset-0 z-0">
-          <InterstellarFluid
-            baseColor={[0.0, 0.0, 0.04]}
-            glowColor={[0.42, 0.39, 1.0]}
-            dissipation={0.985}
-            interactive={true}
-          />
-        </div>
-        {/* Vignette edges */}
-        <div className="absolute inset-0 z-10 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(10,10,15,0.7) 100%)" }} />
-        {/* Top fade from footer */}
-        <div className="absolute inset-x-0 top-0 z-10 h-12 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, #0A0A0F, transparent)" }} />
-        {/* Bottom fade to page edge */}
-        <div className="absolute inset-x-0 bottom-0 z-10 h-8 pointer-events-none"
-          style={{ background: "linear-gradient(to top, #0A0A0F, transparent)" }} />
-
-        {/* Big NexusLink text */}
-        <div className="absolute inset-0 z-20 flex items-center justify-center overflow-hidden px-0">
-          <span
-            className="font-display font-black uppercase tracking-tight leading-none select-none pointer-events-none"
-            style={{
-              fontSize: "17.5vw",
-              letterSpacing: "-0.02em",
-              background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(108,99,255,0.55) 40%, rgba(167,139,250,0.45) 70%, rgba(255,255,255,0.12) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              mixBlendMode: "screen",
-              whiteSpace: "nowrap",
-            }}
-          >
-            NexusLink
-          </span>
-        </div>
-      </section>
+      <WordmarkBanner />
 
     </div>
   );
