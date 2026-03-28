@@ -7,62 +7,90 @@ import {
   Calendar, Phone, FileText, TrendingUp, X,
   Check, RefreshCw, Crown, Brain, Headphones
 } from "lucide-react";
-import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTransform, useAnimationFrame, type MotionValue } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import GradientBlinds from "@/components/ui/GradientBlinds";
 import { InterstellarFluid } from "@/components/ui/InterstellarFluidHero";
 
-// ─── Elastic Letter (magnetic spring hover per character) ──────────────
-function ElasticLetter({ char }: { char: string }) {
+// ─── Magnetic Char — variable font-weight + position pull ──────────────
+function MagneticChar({
+  char,
+  mouseX,
+  mouseY,
+}: {
+  char: string;
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const x = useSpring(rawX, { stiffness: 160, damping: 13, mass: 0.08 });
-  const y = useSpring(rawY, { stiffness: 160, damping: 13, mass: 0.08 });
+  const distance = useMotionValue(1000);
+  const rawPullX = useMotionValue(0);
+  const rawPullY = useMotionValue(0);
+  const pullX = useSpring(rawPullX, { stiffness: 220, damping: 20, mass: 0.08 });
+  const pullY = useSpring(rawPullY, { stiffness: 220, damping: 20, mass: 0.08 });
+
+  // Font-weight morphs 400 → 800 as cursor approaches (Syne supports 400–800)
+  const fontWeight = useTransform(distance, [0, 60, 160, 320], [800, 750, 550, 400]);
+  // Color shifts: muted deep purple → brand accent → near-white spotlight
+  const color = useTransform(
+    distance,
+    [0, 80, 200, 380],
+    ["#e8e4ff", "#a78bfa", "#6c63ff", "#2e2560"]
+  );
+  // Subtle scale bloom on close approach
+  const scale = useTransform(distance, [0, 80, 280], [1.08, 1.04, 1.0]);
+
+  useAnimationFrame(() => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = mouseX.get() - cx;
+    const dy = mouseY.get() - cy;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    distance.set(d);
+
+    const radius = 160;
+    if (d < radius) {
+      const t = 1 - d / radius;
+      const pull = t * t * 36;
+      rawPullX.set((dx / Math.max(d, 1)) * pull);
+      rawPullY.set((dy / Math.max(d, 1)) * pull);
+    } else {
+      rawPullX.set(0);
+      rawPullY.set(0);
+    }
+  });
+
+  return (
+    <motion.span
+      ref={ref}
+      style={{ fontWeight, color, scale, x: pullX, y: pullY, display: "inline-block" }}
+    >
+      {char}
+    </motion.span>
+  );
+}
+
+// ─── Full-Width Wordmark Banner (scroll-reveal + magnetic chars) ────────
+function WordmarkBanner() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: false, margin: "-8%" });
+  const mouseX = useMotionValue(-2000);
+  const mouseY = useMotionValue(-2000);
 
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const el = ref.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const radius = 140;
-      if (dist < radius) {
-        const t = 1 - dist / radius;
-        const pull = t * t * 38;
-        rawX.set((dx / Math.max(dist, 1)) * pull);
-        rawY.set((dy / Math.max(dist, 1)) * pull);
-      } else {
-        rawX.set(0);
-        rawY.set(0);
-      }
-    };
-    const onLeave = () => { rawX.set(0); rawY.set(0); };
+    const onMove = (e: MouseEvent) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
+    const onLeave = () => { mouseX.set(-2000); mouseY.set(-2000); };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
     };
-  }, [rawX, rawY]);
-
-  return (
-    <motion.span ref={ref} style={{ x, y, display: "inline-block" }}>
-      {char}
-    </motion.span>
-  );
-}
-
-// ─── Full-Width Wordmark Banner (scroll-reveal + elastic letters) ───────
-function WordmarkBanner() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: false, margin: "-8%" });
+  }, [mouseX, mouseY]);
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden" style={{ height: "20vw", minHeight: 120, maxHeight: 340 }}>
@@ -88,7 +116,7 @@ function WordmarkBanner() {
       <div className="absolute inset-x-0 bottom-0 z-10 h-8 pointer-events-none"
         style={{ background: "linear-gradient(to top, #0A0A0F, transparent)" }} />
 
-      {/* Scroll-reveal + elastic wordmark */}
+      {/* Scroll-reveal wrapper */}
       <motion.div
         className="absolute inset-0 z-20 flex items-center justify-center overflow-hidden"
         initial={{ opacity: 0, y: 52, filter: "blur(14px)" }}
@@ -97,19 +125,20 @@ function WordmarkBanner() {
           : { opacity: 0, y: 52, filter: "blur(14px)" }}
         transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
       >
+        {/* Per-letter stagger + magnetic hover */}
         <div
-          className="font-display font-black leading-none select-none"
+          className="font-display leading-none select-none"
           style={{ fontSize: "17.5vw", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}
         >
           {"NexusLink".split("").map((char, i) => (
             <motion.span
               key={i}
-              initial={{ opacity: 0, y: 28 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.65, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: "inline-block" }}
             >
-              <ElasticLetter char={char} />
+              <MagneticChar char={char} mouseX={mouseX} mouseY={mouseY} />
             </motion.span>
           ))}
         </div>
