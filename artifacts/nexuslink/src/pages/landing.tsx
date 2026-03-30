@@ -556,24 +556,6 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden font-sans selection:bg-primary/30">
 
-      {/* ── Ambient Background ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <GradientBlinds
-          gradientColors={['#FF9FFC', '#5227FF']}
-          angle={0}
-          noise={0.3}
-          blindCount={12}
-          blindMinWidth={50}
-          spotlightRadius={0.5}
-          spotlightSoftness={1}
-          spotlightOpacity={1}
-          mouseDampening={0.15}
-          distortAmount={0}
-          shineDirection="left"
-          mixBlendMode="lighten"
-        />
-      </div>
-
       {/* ── Header ── */}
       <motion.header
         className="relative z-20 container mx-auto px-6 py-6 flex items-center justify-between"
@@ -620,7 +602,25 @@ export default function LandingPage() {
       <main className="relative z-10">
 
         {/* ── Hero Section ── */}
-        <section className="pt-24 pb-16 px-6 max-w-5xl mx-auto text-center">
+        <section className="relative overflow-hidden">
+          {/* GradientBlinds — scoped to hero only, not the whole page */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <GradientBlinds
+              gradientColors={['#FF9FFC', '#5227FF']}
+              angle={0}
+              noise={0.3}
+              blindCount={12}
+              blindMinWidth={50}
+              spotlightRadius={0.5}
+              spotlightSoftness={1}
+              spotlightOpacity={1}
+              mouseDampening={0.15}
+              distortAmount={0}
+              shineDirection="left"
+              mixBlendMode="lighten"
+            />
+          </div>
+          <div className="relative z-10 pt-24 pb-16 px-6 max-w-5xl mx-auto text-center">
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -690,6 +690,7 @@ export default function LandingPage() {
               ))}
             </motion.div>
           </motion.div>
+          </div>
         </section>
 
         {/* ── Stats Banner ── */}
