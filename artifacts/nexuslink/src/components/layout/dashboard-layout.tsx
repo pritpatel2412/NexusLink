@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { path: "/tasks",        label: "Tasks",        icon: CheckSquare,     external: false },
   { path: "/reminders",    label: "Reminders",    icon: Bell,            external: false },
   { path: "/ai-assistant", label: "AI Assistant", icon: Sparkles,        external: false },
-  { path: "/pricing",      label: "Pricing",      icon: CreditCard,      external: true  },
+  { path: "/pricing",      label: "Pricing",      icon: CreditCard,      external: false },
   { path: "/settings",     label: "Settings",     icon: Settings,        external: false },
 ];
 

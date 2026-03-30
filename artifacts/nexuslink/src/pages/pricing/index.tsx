@@ -292,34 +292,14 @@ export default function PricingPage() {
   const [isINR, setIsINR] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-white overflow-x-hidden">
-      {/* Background orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="relative text-white overflow-x-hidden">
+      {/* Background orbs — contained, not fixed */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-primary/8 blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-accent/8 blur-[120px]" />
       </div>
 
-      {/* Nav bar */}
-      <div className="relative z-10 border-b border-border/50 bg-background/60 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-lg">NexusLink</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-white transition-colors">Sign in</Link>
-            <Link href="/signup">
-              <button className="text-sm px-4 py-2 rounded-xl bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all">
-                Get Started Free
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

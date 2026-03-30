@@ -353,7 +353,7 @@ export default function ContactPage() {
           <div className="flex items-center gap-5">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+            <a href="/#pricing" className="hover:text-white transition-colors">Pricing</a>
           </div>
         </div>
       </div>

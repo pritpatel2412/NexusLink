@@ -303,7 +303,7 @@ export default function TermsPage() {
           <div className="flex items-center gap-5">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+            <a href="/#pricing" className="hover:text-white transition-colors">Pricing</a>
           </div>
         </div>
       </div>

@@ -89,7 +89,9 @@ function Router() {
       <Route path="/settings">
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
-      <Route path="/pricing" component={PricingPage} />
+      <Route path="/pricing">
+        {() => <ProtectedRoute component={PricingPage} />}
+      </Route>
       <Route path="/privacy" component={PrivacyPage} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/contact" component={ContactPage} />
