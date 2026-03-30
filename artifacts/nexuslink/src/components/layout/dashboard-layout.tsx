@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { 
   LayoutDashboard, Users, Clock, CheckSquare,
   Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X, CreditCard
@@ -187,7 +188,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               transition={{ duration: 0.2 }}
               className="h-full"
             >
-              {children}
+              <ErrorBoundary key={location}>
+                {children}
+              </ErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </main>
