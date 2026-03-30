@@ -11,14 +11,14 @@ import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
-  { path: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard },
-  { path: "/contacts",     label: "Contacts",     icon: Users },
-  { path: "/timeline",     label: "Timeline",     icon: Clock },
-  { path: "/tasks",        label: "Tasks",        icon: CheckSquare },
-  { path: "/reminders",    label: "Reminders",    icon: Bell },
-  { path: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
-  { path: "/pricing",      label: "Pricing",      icon: CreditCard },
-  { path: "/settings",     label: "Settings",     icon: Settings },
+  { path: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard, external: false },
+  { path: "/contacts",     label: "Contacts",     icon: Users,           external: false },
+  { path: "/timeline",     label: "Timeline",     icon: Clock,           external: false },
+  { path: "/tasks",        label: "Tasks",        icon: CheckSquare,     external: false },
+  { path: "/reminders",    label: "Reminders",    icon: Bell,            external: false },
+  { path: "/ai-assistant", label: "AI Assistant", icon: Sparkles,        external: false },
+  { path: "/pricing",      label: "Pricing",      icon: CreditCard,      external: true  },
+  { path: "/settings",     label: "Settings",     icon: Settings,        external: false },
 ];
 
 // Bottom nav shows the 5 most important items
@@ -61,19 +61,31 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
       <nav className="flex-1 overflow-y-auto py-2 px-3 space-y-1">
         {NAV_ITEMS.map((item) => {
-          const isActive = location.startsWith(item.path);
+          const isActive = !item.external && location.startsWith(item.path);
           const Icon = item.icon;
+          const inner = (
+            <div className={`
+              flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200
+              ${isActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-muted-foreground hover:bg-white/5 hover:text-foreground"}
+            `}>
+              <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+              {item.label}
+            </div>
+          );
+
+          if (item.external) {
+            return (
+              <a key={item.path} href={item.path} target="_blank" rel="noopener noreferrer" onClick={onClose}>
+                {inner}
+              </a>
+            );
+          }
+
           return (
             <Link key={item.path} href={item.path} onClick={onClose}>
-              <div className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200
-                ${isActive
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"}
-              `}>
-                <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                {item.label}
-              </div>
+              {inner}
             </Link>
           );
         })}
