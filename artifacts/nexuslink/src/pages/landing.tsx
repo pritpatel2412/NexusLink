@@ -7,14 +7,14 @@ import {
   Calendar, Phone, FileText, TrendingUp, X,
   Check, RefreshCw, Crown, Brain, Headphones
 } from "lucide-react";
-import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTransform, useAnimationFrame, type MotionValue } from "framer-motion";
+import { motion, AnimatePresence, useInView, useMotionValue, useTransform, useAnimationFrame, type MotionValue } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import GradientBlinds from "@/components/ui/GradientBlinds";
 import { InterstellarFluid } from "@/components/ui/InterstellarFluidHero";
 
-// ─── Magnetic Char — variable font-weight + position pull ──────────────
+// ─── Magnetic Char — Lunar UI lens effect (weight + opacity magnifier) ──
 function MagneticChar({
   char,
   mouseX,
@@ -26,48 +26,36 @@ function MagneticChar({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const distance = useMotionValue(1000);
-  const rawPullX = useMotionValue(0);
-  const rawPullY = useMotionValue(0);
-  const pullX = useSpring(rawPullX, { stiffness: 220, damping: 20, mass: 0.08 });
-  const pullY = useSpring(rawPullY, { stiffness: 220, damping: 20, mass: 0.08 });
 
-  // Font-weight morphs 400 → 800 as cursor approaches (Syne supports 400–800)
-  const fontWeight = useTransform(distance, [0, 60, 160, 320], [800, 750, 550, 400]);
-  // Color shifts: muted deep purple → brand accent → near-white spotlight
+  // Font-weight: starts very thin (400 = Syne min), blooms to 800 at contact
+  // Threshold 300px so adjacent letters feel the pull too — creates the lens
+  const fontWeight = useTransform(distance, [0, 300], [800, 400]);
+
+  // Opacity: nearly invisible at rest → fully opaque at contact
+  // This is what creates the visual "thin" look even though 400 is Syne's min
+  const opacity = useTransform(distance, [0, 180, 300], [1, 0.55, 0.22]);
+
+  // Color: near-white spotlight → brand violet → very dark purple at rest
   const color = useTransform(
     distance,
-    [0, 80, 200, 380],
-    ["#e8e4ff", "#a78bfa", "#6c63ff", "#2e2560"]
+    [0, 60, 180, 300],
+    ["#f0eeff", "#c4baff", "#7b72e0", "#38306e"]
   );
-  // Subtle scale bloom on close approach
-  const scale = useTransform(distance, [0, 80, 280], [1.08, 1.04, 1.0]);
 
   useAnimationFrame(() => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    const dx = mouseX.get() - cx;
-    const dy = mouseY.get() - cy;
-    const d = Math.sqrt(dx * dx + dy * dy);
-    distance.set(d);
-
-    const radius = 160;
-    if (d < radius) {
-      const t = 1 - d / radius;
-      const pull = t * t * 36;
-      rawPullX.set((dx / Math.max(d, 1)) * pull);
-      rawPullY.set((dy / Math.max(d, 1)) * pull);
-    } else {
-      rawPullX.set(0);
-      rawPullY.set(0);
-    }
+    distance.set(Math.sqrt(
+      Math.pow(mouseX.get() - cx, 2) + Math.pow(mouseY.get() - cy, 2)
+    ));
   });
 
   return (
     <motion.span
       ref={ref}
-      style={{ fontWeight, color, scale, x: pullX, y: pullY, display: "inline-block" }}
+      style={{ fontWeight, opacity, color, display: "inline-block" }}
     >
       {char}
     </motion.span>
