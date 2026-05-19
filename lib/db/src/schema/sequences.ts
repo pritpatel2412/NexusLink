@@ -20,4 +20,5 @@ export const sequencesTable = pgTable("sequences", {
 });
 
 export const insertSequenceSchema = createInsertSchema(sequencesTable).omit({ createdAt: true, updatedAt: true });
-export type InsertSequence 
+export type InsertSequence = z.infer<typeof insertSequenceSchema>;
+export type Sequence = typeof sequencesTable.$inferSelect;
