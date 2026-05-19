@@ -101,11 +101,14 @@ router.get("/me", requireAuth, async (req, res) => {
 router.put("/me/update", requireAuth, async (req, res) => {
   try {
     const user = getCurrentUser(req);
-    const { name, timezone, password, currentPassword } = req.body;
+    const { name, timezone, password, currentPassword, linkedinUrl, githubUrl, portfolioUrl } = req.body;
 
     const updates: Record<string, any> = { updatedAt: new Date() };
     if (name !== undefined) updates.name = name;
     if (timezone !== undefined) updates.timezone = timezone;
+    if (linkedinUrl !== undefined) updates.linkedinUrl = linkedinUrl;
+    if (githubUrl !== undefined) updates.githubUrl = githubUrl;
+    if (portfolioUrl !== undefined) updates.portfolioUrl = portfolioUrl;
 
     if (password) {
       if (!currentPassword) {

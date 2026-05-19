@@ -163,8 +163,8 @@ void main() {
     let isMoving = 0;
 
     function resize() {
-      const w = container.offsetWidth;
-      const h = container.offsetHeight;
+      const w = container?.offsetWidth ?? window.innerWidth;
+      const h = container?.offsetHeight ?? window.innerHeight;
       renderer.setSize(w, h);
       fboRead.setSize(w >> 1, h >> 1);
       fboWrite.setSize(w >> 1, h >> 1);
@@ -173,7 +173,7 @@ void main() {
     }
     window.addEventListener('resize', resize);
     resize();
-    container.appendChild(gl.canvas as HTMLCanvasElement);
+    container?.appendChild(gl.canvas as HTMLCanvasElement);
 
     function updateMouse(x: number, y: number) {
       targetMouse.set(x / (gl.canvas as HTMLCanvasElement).width, 1.0 - y / (gl.canvas as HTMLCanvasElement).height);

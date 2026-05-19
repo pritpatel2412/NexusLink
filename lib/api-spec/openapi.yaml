@@ -753,6 +753,15 @@ components:
           enum: [free, pro, team]
         timezone:
           type: string
+        linkedinUrl:
+          type: string
+          nullable: true
+        githubUrl:
+          type: string
+          nullable: true
+        portfolioUrl:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -774,6 +783,15 @@ components:
           type: string
         currentPassword:
           type: string
+        linkedinUrl:
+          type: string
+          nullable: true
+        githubUrl:
+          type: string
+          nullable: true
+        portfolioUrl:
+          type: string
+          nullable: true
 
     ContactTag:
       type: object

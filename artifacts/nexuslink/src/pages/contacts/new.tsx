@@ -60,8 +60,9 @@ export default function NewContactPage() {
           website: website.trim() || undefined,
           whereMet: whereMet.trim() || undefined,
           notes: notes.trim() || undefined,
-          relationship: relationship || undefined,
-          tags: tags.length > 0 ? tags : undefined,
+          tags: ([...tags, ...(relationship ? [relationship] : [])].length > 0 
+            ? [...tags, ...(relationship ? [relationship] : [])] 
+            : undefined) as any,
         }
       });
       qc.invalidateQueries({ queryKey: getListContactsQueryKey() });

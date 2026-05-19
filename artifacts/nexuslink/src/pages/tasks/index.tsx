@@ -149,8 +149,8 @@ export default function TasksPage() {
   const [showCreate, setShowCreate] = useState(false);
 
   const { data: tasks, isLoading } = useListTasks(
-    statusFilter !== "all" ? { status: statusFilter } : {},
-    { query: { staleTime: 30_000 } }
+    statusFilter !== "all" ? { status: statusFilter as any } : {},
+    { query: { staleTime: 30_000 } as any }
   );
 
   const { mutateAsync: updateTask } = useUpdateTask();

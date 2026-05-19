@@ -10,6 +10,9 @@ export const usersTable = pgTable("users", {
   avatarUrl: text("avatar_url"),
   plan: text("plan").notNull().default("free"),
   timezone: text("timezone").notNull().default("UTC"),
+  linkedinUrl: text("linkedin_url"),
+  githubUrl: text("github_url"),
+  portfolioUrl: text("portfolio_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

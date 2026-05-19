@@ -14,5 +14,8 @@ export interface User {
   avatarUrl?: string | null;
   plan: UserPlan;
   timezone: string;
+  linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  portfolioUrl?: string | null;
   createdAt: Date;
 }

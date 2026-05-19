@@ -41,6 +41,9 @@ export const LoginResponse = zod.object({
     avatarUrl: zod.string().nullish(),
     plan: zod.enum(["free", "pro", "team"]),
     timezone: zod.string(),
+    linkedinUrl: zod.string().nullish(),
+    githubUrl: zod.string().nullish(),
+    portfolioUrl: zod.string().nullish(),
     createdAt: zod.date(),
   }),
   token: zod.string(),
@@ -64,6 +67,9 @@ export const GetMeResponse = zod.object({
   avatarUrl: zod.string().nullish(),
   plan: zod.enum(["free", "pro", "team"]),
   timezone: zod.string(),
+  linkedinUrl: zod.string().nullish(),
+  githubUrl: zod.string().nullish(),
+  portfolioUrl: zod.string().nullish(),
   createdAt: zod.date(),
 });
 
@@ -75,6 +81,9 @@ export const UpdateMeBody = zod.object({
   timezone: zod.string().optional(),
   password: zod.string().optional(),
   currentPassword: zod.string().optional(),
+  linkedinUrl: zod.string().nullish(),
+  githubUrl: zod.string().nullish(),
+  portfolioUrl: zod.string().nullish(),
 });
 
 export const UpdateMeResponse = zod.object({
@@ -84,6 +93,9 @@ export const UpdateMeResponse = zod.object({
   avatarUrl: zod.string().nullish(),
   plan: zod.enum(["free", "pro", "team"]),
   timezone: zod.string(),
+  linkedinUrl: zod.string().nullish(),
+  githubUrl: zod.string().nullish(),
+  portfolioUrl: zod.string().nullish(),
   createdAt: zod.date(),
 });
 

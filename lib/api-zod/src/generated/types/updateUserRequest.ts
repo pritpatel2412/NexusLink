@@ -11,4 +11,7 @@ export interface UpdateUserRequest {
   timezone?: string;
   password?: string;
   currentPassword?: string;
+  linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  portfolioUrl?: string | null;
 }

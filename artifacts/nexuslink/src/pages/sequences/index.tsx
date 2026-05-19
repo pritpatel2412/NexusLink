@@ -385,7 +385,7 @@ export default function GhostRecoveryPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-xs text-muted-foreground block">Desperation Score</span>
-                    <span className="text-xs text-muted-foreground">Alert threshold >40%</span>
+                    <span className="text-xs text-muted-foreground">Alert threshold &gt;40%</span>
                   </div>
                   <div className={`px-3 py-1.5 border rounded-xl font-display font-extrabold text-lg text-center ${getScoreColor(analysisResult.desperationScore)}`}>
                     {analysisResult.desperationScore}%

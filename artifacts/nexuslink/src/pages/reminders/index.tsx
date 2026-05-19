@@ -116,10 +116,9 @@ export default function RemindersPage() {
   const qc = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
 
-  const { data: reminders, isLoading } = useListReminders(
-    {},
-    { query: { staleTime: 30_000 } }
-  );
+  const { data: reminders, isLoading } = useListReminders(({
+    query: { staleTime: 30_000 } as any
+  } as any));
 
   const { mutateAsync: deleteReminder } = useDeleteReminder();
 

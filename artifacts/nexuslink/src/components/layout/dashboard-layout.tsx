@@ -5,7 +5,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { 
   LayoutDashboard, Users, Clock, CheckSquare,
   Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X, CreditCard,
-  Briefcase, Network, Shield, Compass, Zap
+  Briefcase, Network, Shield, Compass, Zap, Linkedin, Github, Globe
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils";
@@ -104,7 +104,26 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">{user?.name || "User"}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.plan === "pro" ? "Pro Plan" : "Free Plan"}</p>
+            <div className="flex items-center justify-between gap-1.5 mt-0.5">
+              <span className="text-xs text-muted-foreground truncate">{user?.plan === "pro" ? "Pro Plan" : "Free Plan"}</span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {(user as any)?.linkedinUrl && (
+                  <a href={(user as any).linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0A66C2] transition-colors" title="LinkedIn">
+                    <Linkedin className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {(user as any)?.githubUrl && (
+                  <a href={(user as any).githubUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="GitHub">
+                    <Github className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {(user as any)?.portfolioUrl && (
+                  <a href={(user as any).portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" title="Portfolio">
+                    <Globe className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         <Button
@@ -120,9 +139,69 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   );
 }
 
+interface AppNotification {
+  id: string;
+  title: string;
+  description: string;
+  type: "crawler" | "task" | "system";
+  time: string;
+  read: boolean;
+}
+
+const INITIAL_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: "n1",
+    title: "Vercel Signal Matched",
+    description: "Tinyfish Crawler matched Next.js Core hiring signals with your target profile.",
+    type: "crawler",
+    time: "2 mins ago",
+    read: false
+  },
+  {
+    id: "n2",
+    title: "Task Reminder",
+    description: "Follow up with Tuomas Artola (Linear Co-Founder) regarding product intern opening.",
+    type: "task",
+    time: "1 hour ago",
+    read: false
+  },
+  {
+    id: "n3",
+    title: "Sync Successful",
+    description: "Sarah Jenkins has been added to your CRM contacts list under 'warm-path' tag.",
+    type: "system",
+    time: "3 hours ago",
+    read: true
+  },
+  {
+    id: "n4",
+    title: "New Signal Identified",
+    description: "Supabase announced a new expansion seed round matching your custom funding triggers.",
+    type: "crawler",
+    time: "1 day ago",
+    read: true
+  }
+];
+
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const toggleRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: !n.read } : n));
+  };
+
+  const removeNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden text-foreground selection:bg-primary/30">
@@ -182,10 +261,108 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground hover:text-foreground">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full animate-pulse" />
-            </Button>
+            
+            {/* Real-time Notifications Bell dropdown with smooth animations */}
+            <div className="relative">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className={`rounded-full relative ${showNotifications ? "bg-white/5 text-white" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full animate-pulse" />
+                )}
+              </Button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <>
+                    {/* Overlay to close dropdown */}
+                    <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-gradient-to-b from-[#141421] to-[#0A0A0F] border border-white/10 rounded-2xl shadow-2xl p-4 backdrop-blur-xl z-50 space-y-4"
+                    >
+                      <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-primary" />
+                          <span className="font-bold text-sm text-white">Notifications</span>
+                          {unreadCount > 0 && (
+                            <span className="text-[10px] bg-primary/20 text-primary font-bold px-2 py-0.5 rounded-full shrink-0">
+                              {unreadCount} new
+                            </span>
+                          )}
+                        </div>
+                        {unreadCount > 0 && (
+                          <button 
+                            onClick={markAllRead}
+                            className="text-xs text-primary hover:text-white transition-colors font-medium"
+                          >
+                            Mark all read
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                        {notifications.length === 0 ? (
+                          <div className="text-center py-8 text-xs text-muted-foreground italic">
+                            No notifications yet
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <div 
+                              key={n.id} 
+                              onClick={() => toggleRead(n.id)}
+                              className={`p-3 rounded-xl border transition-all cursor-pointer relative group flex gap-3 ${
+                                n.read 
+                                  ? "bg-card/10 border-white/5 hover:border-white/10" 
+                                  : "bg-primary/5 border-primary/20 hover:border-primary/30"
+                              }`}
+                            >
+                              <div className="mt-0.5 shrink-0">
+                                {n.type === "crawler" && <Sparkles className="w-4 h-4 text-accent" />}
+                                {n.type === "task" && <CheckSquare className="w-4 h-4 text-primary" />}
+                                {n.type === "system" && <Compass className="w-4 h-4 text-emerald-400" />}
+                              </div>
+
+                              <div className="flex-1 space-y-1 min-w-0 pr-4">
+                                <p className={`text-xs text-white truncate ${!n.read ? "font-bold" : "font-medium"}`}>
+                                  {n.title}
+                                </p>
+                                <p className="text-[11px] text-gray-400 leading-relaxed">
+                                  {n.description}
+                                </p>
+                                <span className="text-[9px] text-muted-foreground font-medium block">
+                                  {n.time}
+                                </span>
+                              </div>
+
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeNotification(n.id);
+                                }}
+                                className="absolute top-2 right-2 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Dismiss"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+
             <Link href="/contacts/new">
               <Button className="hidden sm:flex bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg shadow-primary/20 text-white rounded-full px-4 lg:px-5 font-medium text-sm transition-all hover:scale-105 active:scale-95">
                 <Plus className="w-4 h-4 sm:mr-1.5" />

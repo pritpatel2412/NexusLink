@@ -37,8 +37,8 @@ export default function TimelinePage() {
   const [typeFilter, setTypeFilter] = useState("all");
 
   const { data: interactions, isLoading } = useListInteractions(
-    typeFilter !== "all" ? { type: typeFilter } : {},
-    { query: { staleTime: 30_000 } }
+    (typeFilter !== "all" ? { type: typeFilter as any } : {}) as any,
+    { query: { staleTime: 30_000 } as any }
   );
 
   const grouped = groupByDate(interactions || []);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateMe, getGetMeQueryKey, useExportCsv } from "@workspace/api-client-react";
 import { useAuth } from "@/hooks/use-auth";
-import { User, Lock, Download, Bell, Loader2, Check } from "lucide-react";
+import { User, Lock, Download, Bell, Loader2, Check, Linkedin, Github, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -17,25 +17,39 @@ export default function SettingsPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [timezone, setTimezone] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const { mutateAsync: updateMe, isPending: isSaving } = useUpdateMe();
-  const { refetch: exportCsv, isFetching: isExporting } = useExportCsv({ query: { enabled: false } });
+  const { refetch: exportCsv, isFetching: isExporting } = useExportCsv({ query: { enabled: false } as any });
 
   useEffect(() => {
     if (user) {
       setName((user as any).name || "");
       setEmail((user as any).email || "");
       setTimezone((user as any).timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
+      setLinkedinUrl((user as any).linkedinUrl || "");
+      setGithubUrl((user as any).githubUrl || "");
+      setPortfolioUrl((user as any).portfolioUrl || "");
     }
   }, [user]);
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await updateMe({ data: { name, email, timezone } });
+      await updateMe({
+        data: {
+          name,
+          timezone,
+          linkedinUrl: linkedinUrl.trim() || null,
+          githubUrl: githubUrl.trim() || null,
+          portfolioUrl: portfolioUrl.trim() || null,
+        }
+      });
       qc.invalidateQueries({ queryKey: getGetMeQueryKey() });
       toast({ title: "Profile updated successfully!" });
     } catch (err: any) {
@@ -54,7 +68,7 @@ export default function SettingsPage() {
       return;
     }
     try {
-      await updateMe({ data: { currentPassword, newPassword } });
+      await updateMe({ data: { currentPassword, password: newPassword } });
       toast({ title: "Password changed successfully!" });
       setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
     } catch (err: any) {
@@ -172,6 +186,47 @@ export default function SettingsPage() {
                   />
                   <p className="text-xs text-muted-foreground mt-1">Auto-detected: {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-border/50 pt-5 mt-5">
+                  <div className="md:col-span-3">
+                    <h3 className="text-sm font-semibold text-white tracking-wide uppercase">Social Profiles & Website</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Add your professional links to connect your profile with contacts.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-1.5">
+                      <Linkedin className="w-4 h-4 text-[#0A66C2]" /> LinkedIn
+                    </label>
+                    <Input
+                      value={linkedinUrl}
+                      onChange={e => setLinkedinUrl(e.target.value)}
+                      placeholder="https://linkedin.com/in/username"
+                      className="bg-background/50 border-white/10 h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-1.5">
+                      <Github className="w-4 h-4 text-white" /> GitHub
+                    </label>
+                    <Input
+                      value={githubUrl}
+                      onChange={e => setGithubUrl(e.target.value)}
+                      placeholder="https://github.com/username"
+                      className="bg-background/50 border-white/10 h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-1.5">
+                      <Globe className="w-4 h-4 text-primary" /> Portfolio Website
+                    </label>
+                    <Input
+                      value={portfolioUrl}
+                      onChange={e => setPortfolioUrl(e.target.value)}
+                      placeholder="https://yourportfolio.com"
+                      className="bg-background/50 border-white/10 h-11"
+                    />
+                  </div>
+                </div>
+
                 <div className="flex justify-end pt-2">
                   <Button type="submit" disabled={isSaving} className="bg-primary hover:bg-primary/90 text-white">
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}

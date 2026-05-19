@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import GradientBlinds from "@/components/ui/GradientBlinds";
 import { InterstellarFluid } from "@/components/ui/InterstellarFluidHero";
+import TextPressure from "@/components/ui/TextPressure";
 
 // ─── Magnetic Char — Lunar UI lens effect (weight + opacity magnifier) ──
 function MagneticChar({
@@ -62,73 +63,87 @@ function MagneticChar({
   );
 }
 
-// ─── Full-Width Wordmark Banner (scroll-reveal + magnetic chars) ────────
+// ─── Full-Width Wordmark Banner (scroll-reveal + interactive pressure text) ────────
 function WordmarkBanner() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: false, margin: "-8%" });
-  const mouseX = useMotionValue(-2000);
-  const mouseY = useMotionValue(-2000);
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
-    const onLeave = () => { mouseX.set(-2000); mouseY.set(-2000); };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseleave", onLeave);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseleave", onLeave);
-    };
-  }, [mouseX, mouseY]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden" style={{ height: "20vw", minHeight: 120, maxHeight: 340 }}>
-      {/* CSS fallback gradient */}
-      <div className="absolute inset-0 z-0"
-        style={{ background: "radial-gradient(ellipse 80% 120% at 50% 60%, rgba(108,99,255,0.28) 0%, rgba(88,28,235,0.12) 40%, #0A0A0F 80%)" }} />
-      {/* Interstellar fluid */}
-      <div className="absolute inset-0 z-0">
-        <InterstellarFluid
-          baseColor={[0.0, 0.0, 0.04]}
-          glowColor={[0.42, 0.39, 1.0]}
-          dissipation={0.985}
-          interactive={true}
+    <section ref={sectionRef} className="relative overflow-hidden w-full bg-[#0A0A0F]" style={{ height: "340px", minHeight: "260px" }}>
+      {/* Premium animated nebula background */}
+      <div className="absolute inset-0 z-0 bg-[#0A0A0F]">
+        {/* Soft floating nebula orbs */}
+        <motion.div
+          animate={{
+            x: [0, 30, -15, 0],
+            y: [0, -20, 15, 0],
+            scale: [1, 1.1, 0.95, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -top-1/4 left-1/4 w-[500px] h-[300px] bg-primary/12 rounded-full blur-[90px] pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            x: [0, -40, 20, 0],
+            y: [0, 30, -20, 0],
+            scale: [1, 0.95, 1.05, 1],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1.5,
+          }}
+          className="absolute -bottom-1/4 right-1/4 w-[450px] h-[280px] bg-accent/15 rounded-full blur-[90px] pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            scale: [0.95, 1.05, 0.95],
+            opacity: [0.35, 0.55, 0.35]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[220px] bg-[#6C63FF]/8 rounded-full blur-[70px] pointer-events-none"
         />
       </div>
-      {/* Vignette */}
+
+      {/* Vignette & Gradients to guarantee seamless blending and clear text visibility */}
       <div className="absolute inset-0 z-10 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(10,10,15,0.7) 100%)" }} />
-      {/* Top fade */}
-      <div className="absolute inset-x-0 top-0 z-10 h-12 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,15,0.85) 95%)" }} />
+      <div className="absolute inset-x-0 top-0 z-10 h-16 pointer-events-none"
         style={{ background: "linear-gradient(to bottom, #0A0A0F, transparent)" }} />
-      {/* Bottom fade */}
-      <div className="absolute inset-x-0 bottom-0 z-10 h-8 pointer-events-none"
+      <div className="absolute inset-x-0 bottom-0 z-10 h-16 pointer-events-none"
         style={{ background: "linear-gradient(to top, #0A0A0F, transparent)" }} />
 
       {/* Scroll-reveal wrapper */}
       <motion.div
-        className="absolute inset-0 z-20 flex items-center justify-center overflow-hidden"
+        className="absolute inset-0 z-20 flex items-center justify-center p-4 overflow-hidden"
         initial={{ opacity: 0, y: 52, filter: "blur(14px)" }}
         animate={isInView
           ? { opacity: 1, y: 0, filter: "blur(0px)" }
           : { opacity: 0, y: 52, filter: "blur(14px)" }}
         transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Per-letter stagger + magnetic hover */}
-        <div
-          className="font-display leading-none select-none"
-          style={{ fontSize: "17.5vw", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}
-        >
-          {"NexusLink".split("").map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.65, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: "inline-block" }}
-            >
-              <MagneticChar char={char} mouseX={mouseX} mouseY={mouseY} />
-            </motion.span>
-          ))}
+        <div style={{ position: 'relative', height: '300px', width: '100%', maxWidth: '1200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <TextPressure
+            text="NexusLink"
+            flex
+            alpha={false}
+            stroke={false}
+            width
+            weight
+            italic
+            textColor="#ffffff"
+            strokeColor="#5227FF"
+            minFontSize={36}
+          />
         </div>
       </motion.div>
     </section>
@@ -544,12 +559,12 @@ export default function LandingPage() {
   const [pricingINR, setPricingINR] = useState(false);
   const { toast } = useToast();
 
-  const fadeUp = {
+  const fadeUp: any = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
   };
 
-  const stagger = {
+  const stagger: any = {
     show: { transition: { staggerChildren: 0.12 } }
   };
 

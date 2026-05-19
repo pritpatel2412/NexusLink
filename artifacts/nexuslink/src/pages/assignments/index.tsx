@@ -385,7 +385,7 @@ export default function AssignmentShieldPage() {
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-xs text-muted-foreground block">Process Red Flag Score</span>
-                            <span className="text-xs text-muted-foreground">Threshold warning >60%</span>
+                            <span className="text-xs text-muted-foreground">Threshold warning &gt;60%</span>
                           </div>
                           <div className={`px-4 py-2 border rounded-xl font-display font-extrabold text-xl ${getScoreColor(autopsyData.redFlagScore)}`}>
                             {autopsyData.redFlagScore}%

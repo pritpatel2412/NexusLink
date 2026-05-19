@@ -39,7 +39,7 @@ function LogInteractionModal({
     e.preventDefault();
     if (!summary.trim()) return;
     try {
-      await createInteraction({ data: { contactId, type, summary: summary.trim(), occurredAt, source: "manual" } });
+      await createInteraction({ data: { contactId, type: type as any, summary: summary.trim(), occurredAt, source: "manual" } });
       qc.invalidateQueries({ queryKey: getGetContactQueryKey(contactId) });
       toast({ title: "Interaction logged!" });
       setSummary(""); setType("meeting");
