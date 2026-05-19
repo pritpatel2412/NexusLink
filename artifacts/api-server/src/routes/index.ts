@@ -9,6 +9,13 @@ import aiRouter from "./ai.js";
 import dashboardRouter from "./dashboard.js";
 import importExportRouter from "./importExport.js";
 
+// NexusLink advanced feature routes
+import portfolioRouter from "./portfolio.js";
+import networkRouter from "./network.js";
+import assignmentsRouter from "./assignments.js";
+import opportunitiesRouter from "./opportunities.js";
+import sequencesRouter from "./sequences.js";
+
 const router: IRouter = Router();
 
 router.use(healthRouter);
@@ -21,4 +28,12 @@ router.use("/ai", aiRouter);
 router.use("/dashboard", dashboardRouter);
 router.use(importExportRouter);
 
+// Register NexusLink advanced routes
+router.use("/portfolio", portfolioRouter);
+router.use("/network", networkRouter);
+router.use("/assignments", assignmentsRouter);
+router.use("/opportunities", opportunitiesRouter);
+router.use("/sequences", sequencesRouter);
+
 export default router;
+

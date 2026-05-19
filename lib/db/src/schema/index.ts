@@ -4,3 +4,7 @@ export * from "./interactions";
 export * from "./tasks";
 export * from "./reminders";
 export * from "./passwordResetTokens";
+export * from "./workArtifacts";
+export * from "./assignmentJournal";
+export * from "./opportunities";
+export * from "./sequences";

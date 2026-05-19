@@ -26,6 +26,15 @@ import PricingPage from "@/pages/pricing/index";
 import PrivacyPage from "@/pages/privacy/index";
 import TermsPage from "@/pages/terms/index";
 import ContactPage from "@/pages/contact/index";
+
+// NexusLink advanced feature pages
+import PortfolioPage from "@/pages/portfolio/index";
+import PublicPortfolioPage from "@/pages/portfolio/public";
+import WarmPathsPage from "@/pages/network/index";
+import AssignmentShieldPage from "@/pages/assignments/index";
+import OpportunityIntelligencePage from "@/pages/opportunities/index";
+import GhostRecoveryPage from "@/pages/sequences/index";
+
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -95,6 +104,24 @@ function Router() {
       <Route path="/privacy" component={PrivacyPage} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/contact" component={ContactPage} />
+
+      {/* NexusLink Premium Systems */}
+      <Route path="/portfolio/public/:userId" component={PublicPortfolioPage} />
+      <Route path="/portfolio">
+        {() => <ProtectedRoute component={PortfolioPage} />}
+      </Route>
+      <Route path="/network">
+        {() => <ProtectedRoute component={WarmPathsPage} />}
+      </Route>
+      <Route path="/assignments">
+        {() => <ProtectedRoute component={AssignmentShieldPage} />}
+      </Route>
+      <Route path="/opportunities">
+        {() => <ProtectedRoute component={OpportunityIntelligencePage} />}
+      </Route>
+      <Route path="/sequences">
+        {() => <ProtectedRoute component={GhostRecoveryPage} />}
+      </Route>
 
       <Route component={NotFound} />
     </Switch>

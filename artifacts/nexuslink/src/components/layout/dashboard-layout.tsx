@@ -4,21 +4,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { 
   LayoutDashboard, Users, Clock, CheckSquare,
-  Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X, CreditCard
+  Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X, CreditCard,
+  Briefcase, Network, Shield, Compass, Zap
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
-  { path: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard, external: false },
-  { path: "/contacts",     label: "Contacts",     icon: Users,           external: false },
-  { path: "/timeline",     label: "Timeline",     icon: Clock,           external: false },
-  { path: "/tasks",        label: "Tasks",        icon: CheckSquare,     external: false },
-  { path: "/reminders",    label: "Reminders",    icon: Bell,            external: false },
-  { path: "/ai-assistant", label: "AI Assistant", icon: Sparkles,        external: false },
-  { path: "/pricing",      label: "Pricing",      icon: CreditCard,      external: false },
-  { path: "/settings",     label: "Settings",     icon: Settings,        external: false },
+  { path: "/dashboard",    label: "Dashboard",          icon: LayoutDashboard, external: false },
+  { path: "/contacts",     label: "Contacts",           icon: Users,           external: false },
+  { path: "/timeline",     label: "Timeline",           icon: Clock,           external: false },
+  { path: "/portfolio",    label: "Work Arsenal",       icon: Briefcase,       external: false },
+  { path: "/network",      label: "Warm Paths",         icon: Network,         external: false },
+  { path: "/assignments",  label: "Assignment Shield",  icon: Shield,          external: false },
+  { path: "/opportunities",label: "Opportunities",      icon: Compass,         external: false },
+  { path: "/sequences",    label: "Ghost Recovery",     icon: Zap,             external: false },
+  { path: "/tasks",        label: "Tasks",              icon: CheckSquare,     external: false },
+  { path: "/reminders",    label: "Reminders",          icon: Bell,            external: false },
+  { path: "/ai-assistant", label: "AI Assistant",       icon: Sparkles,        external: false },
+  { path: "/pricing",      label: "Pricing",            icon: CreditCard,      external: false },
+  { path: "/settings",     label: "Settings",           icon: Settings,        external: false },
 ];
 
 // Bottom nav shows the 5 most important items

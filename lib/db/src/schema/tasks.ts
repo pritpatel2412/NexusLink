@@ -13,6 +13,7 @@ export const tasksTable = pgTable("tasks", {
   dueDate: timestamp("due_date"),
   priority: text("priority").notNull().default("medium"), // low, medium, high
   status: text("status").notNull().default("pending"), // pending, done
+  type: text("type").notNull().default("standard"), // standard, assignment
   createdAt: timestamp("created_at").notNull().defaultNow(),
   completedAt: timestamp("completed_at"),
 });

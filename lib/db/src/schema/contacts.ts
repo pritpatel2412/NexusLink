@@ -18,6 +18,7 @@ export const contactsTable = pgTable("contacts", {
   avatarUrl: text("avatar_url"),
   whereMet: text("where_met"),
   introducedBy: text("introduced_by"),
+  pastCompanies: text("past_companies"), // JSON or plain text list of past employers
   topicsDiscussed: text("topics_discussed"),
   notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
