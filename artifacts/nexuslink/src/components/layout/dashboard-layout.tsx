@@ -5,7 +5,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { 
   LayoutDashboard, Users, Clock, CheckSquare,
   Bell, Sparkles, Settings, LogOut, Plus, Search, Menu, X, CreditCard,
-  Briefcase, Network, Shield, Compass, Zap, Linkedin, Github, Globe
+  Briefcase, Network, Shield, Compass, Zap, Linkedin, Github, Globe, BrainCircuit
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils";
@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { path: "/portfolio",    label: "Work Arsenal",       icon: Briefcase,       external: false },
   { path: "/network",      label: "Network Graph",      icon: Network,         external: false },
   { path: "/assignments",  label: "Assignment Shield",  icon: Shield,          external: false },
+  { path: "/intelligence", label: "Intelligence Hub",   icon: BrainCircuit,    external: false },
   { path: "/opportunities",label: "Opportunities",      icon: Compass,         external: false },
   { path: "/sequences",    label: "Ghost Recovery",     icon: Zap,             external: false },
   { path: "/tasks",        label: "Tasks",              icon: CheckSquare,     external: false },

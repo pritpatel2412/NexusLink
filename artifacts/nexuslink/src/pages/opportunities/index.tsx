@@ -67,7 +67,10 @@ export default function OpportunityIntelligencePage() {
     const q = queryOverride !== undefined ? queryOverride : searchQuery;
     setIsSearching(true);
     try {
-      const res = await fetch(`/api/opportunities/search?query=${encodeURIComponent(q)}`);
+      const token = localStorage.getItem("nexuslink_token");
+      const res = await fetch(`/api/opportunities/search?query=${encodeURIComponent(q)}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
         setScrapedJobs(data);
@@ -82,9 +85,13 @@ export default function OpportunityIntelligencePage() {
   const handleImportJob = async (job: any) => {
     setImportingJobId(job.id);
     try {
+      const token = localStorage.getItem("nexuslink_token");
       const res = await fetch("/api/opportunities/import", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           companyName: job.companyName,
           roleTitle: job.roleTitle,
@@ -118,7 +125,10 @@ export default function OpportunityIntelligencePage() {
 
   const fetchOpportunities = async () => {
     try {
-      const res = await fetch("/api/opportunities");
+      const token = localStorage.getItem("nexuslink_token");
+      const res = await fetch("/api/opportunities", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
         setOpportunities(data);
@@ -132,7 +142,10 @@ export default function OpportunityIntelligencePage() {
 
   const fetchAlerts = async () => {
     try {
-      const res = await fetch("/api/opportunities/alerts");
+      const token = localStorage.getItem("nexuslink_token");
+      const res = await fetch("/api/opportunities/alerts", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
         setAlerts(data);
@@ -150,9 +163,13 @@ export default function OpportunityIntelligencePage() {
     }
 
     try {
+      const token = localStorage.getItem("nexuslink_token");
       const res = await fetch("/api/opportunities", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           companyName,
           roleTitle,
@@ -187,9 +204,13 @@ export default function OpportunityIntelligencePage() {
     const nextStage = STAGES[nextIndex].id;
 
     try {
+      const token = localStorage.getItem("nexuslink_token");
       const res = await fetch(`/api/opportunities/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({ stage: nextStage })
       });
 
@@ -204,7 +225,11 @@ export default function OpportunityIntelligencePage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Remove this opportunity from your tracker?")) return;
     try {
-      const res = await fetch(`/api/opportunities/${id}`, { method: "DELETE" });
+      const token = localStorage.getItem("nexuslink_token");
+      const res = await fetch(`/api/opportunities/${id}`, { 
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (res.ok) {
         toast({ title: "Opportunity Removed" });
         fetchOpportunities();

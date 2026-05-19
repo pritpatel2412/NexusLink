@@ -15,6 +15,7 @@ import networkRouter from "./network.js";
 import assignmentsRouter from "./assignments.js";
 import opportunitiesRouter from "./opportunities.js";
 import sequencesRouter from "./sequences.js";
+import intelligenceRouter from "./intelligence.js";
 
 const router: IRouter = Router();
 
@@ -34,6 +35,7 @@ router.use("/network", networkRouter);
 router.use("/assignments", assignmentsRouter);
 router.use("/opportunities", opportunitiesRouter);
 router.use("/sequences", sequencesRouter);
+router.use("/intelligence", intelligenceRouter);
 
 export default router;
 

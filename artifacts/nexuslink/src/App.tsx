@@ -34,6 +34,7 @@ import WarmPathsPage from "@/pages/network/index";
 import AssignmentShieldPage from "@/pages/assignments/index";
 import OpportunityIntelligencePage from "@/pages/opportunities/index";
 import GhostRecoveryPage from "@/pages/sequences/index";
+import IntelligenceHub from "@/pages/intelligence/index";
 
 import NotFound from "@/pages/not-found";
 
@@ -121,6 +122,9 @@ function Router() {
       </Route>
       <Route path="/sequences">
         {() => <ProtectedRoute component={GhostRecoveryPage} />}
+      </Route>
+      <Route path="/intelligence">
+        {() => <ProtectedRoute component={IntelligenceHub} />}
       </Route>
 
       <Route component={NotFound} />
