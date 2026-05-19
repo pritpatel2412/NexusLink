@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { path: "/contacts",     label: "Contacts",           icon: Users,           external: false },
   { path: "/timeline",     label: "Timeline",           icon: Clock,           external: false },
   { path: "/portfolio",    label: "Work Arsenal",       icon: Briefcase,       external: false },
-  { path: "/network",      label: "Warm Paths",         icon: Network,         external: false },
+  { path: "/network",      label: "Network Graph",      icon: Network,         external: false },
   { path: "/assignments",  label: "Assignment Shield",  icon: Shield,          external: false },
   { path: "/opportunities",label: "Opportunities",      icon: Compass,         external: false },
   { path: "/sequences",    label: "Ghost Recovery",     icon: Zap,             external: false },
