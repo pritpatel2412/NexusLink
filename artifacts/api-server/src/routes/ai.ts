@@ -81,7 +81,7 @@ router.post("/network-pulse", async (req, res) => {
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -183,7 +183,7 @@ Open tasks: ${tasks.filter(t => t.status === "pending").map(t => t.title).join("
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -245,7 +245,7 @@ router.post("/summarize", async (req, res) => {
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -327,7 +327,7 @@ ${tasks.map(t => `- [${t.priority.toUpperCase()}] ${t.title} (due: ${t.dueDate ?
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -381,7 +381,7 @@ router.post("/draft-email", async (req, res) => {
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -481,7 +481,7 @@ Use this real data to answer the user's questions accurately.`;
 
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "gpt-4o-mini",
       messages: [
         {
           role: "system",
